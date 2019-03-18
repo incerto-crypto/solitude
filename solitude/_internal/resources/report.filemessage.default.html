@@ -1,0 +1,154 @@
+<html>
+    <head>
+        <title>Report: {{project}} [{{component}}]</title>
+        <style>
+        #page, td { margin: 0; padding: 0; }
+        #page { border-collapse: collapse; }
+        table { border-spacing: 0; border-collapse: collapse; }
+
+        body {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+            background-color:white;
+        }
+
+        body, table, thead, tbody {
+            font-size: 1em;
+        }
+
+        .header {
+            font-weight: bold;
+        }
+        .errtable th {
+            font-weight: normal;
+            text-align: left;
+            color:firebrick;
+        }
+        .errtable td {
+            color: black;
+            padding: 0.2em 0 0.2em 0;
+        }
+        .errtable th {
+            padding: 0.2em 0 0.2em 0;
+        }
+
+        .header-collapsed-icon, .header-expanded-icon {
+            font-weight: bold;
+            width: 1em;
+            display: inline-block;
+        }
+        .expanded span.header-collapsed-icon {
+            display: none;
+        }
+        .collapsed span.header-expanded-icon {
+            display: none;
+        }
+        .expanded div.content-collapsed {
+            display: none;
+        }
+        .collapsed div.content-expanded {
+            display: none;
+        }
+        
+        div.header {
+            height:1em;
+            padding: 0.5em 0.5em 0.5em 0.5em;
+        }
+        .st-error div.header {
+            background-color:tomato;
+        }
+        .st-error div.content {
+            background-color:wheat;
+        }
+        .st-ok div.header {
+            background-color:lightgreen;
+        }
+
+
+        div.content {
+            padding: 0.5em 0.5em 0.5em 0.5em;
+        }
+        </style>
+    </head>
+    <body>
+        <script>
+            function toggle_collapse(e) {
+                let container = e.target;
+                for(let i=0; i<10 && !container.classList.contains("container"); i++) {
+                    container = container.parentElement;
+                }
+
+                // console.log(content);
+                if(container.classList.contains("collapsed")) {
+                    container.classList.remove("collapsed");
+                    container.classList.add("expanded");
+                }
+                else {
+                    container.classList.remove("expanded");
+                    container.classList.add("collapsed");
+                }
+            }
+        </script>
+
+        <div>
+            <table class="errtable" border="0">
+                <tbody>
+                    <tr>
+                        <td style="width:10em; font-weight:bold;">Project</td>
+                        <td>{{project}}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:bold;">Component</td>
+                        <td>{{component}}</td>
+                    </tr>
+                    {{#info}}
+                    <tr>
+                        <td style="font-weight:bold;">{{key}}</td>
+                        <td>{{value}}</td>
+                    </tr>
+                    {{/info}}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        {{#files}}
+        <div class="container expanded {{style}}">
+            <div class="header" onclick="toggle_collapse(event)">
+                <span class="header-collapsed-icon">{{#content}}+{{/content}}</span>
+                <span class="header-expanded-icon">{{#content}}+{{/content}}</span>
+                <span>{{filename}}</span>
+            </div>
+            {{#content}}
+            <div class="content" data-visible="true">
+                <div class="content-collapsed" onclick="toggle_collapse(event)">
+                    [collapsed {{count}} elements]
+                </div>
+                <div class="content-expanded">
+                    <table class="errtable" border="0">
+                        <thead>
+                            {{#table_header}}
+                            <tr>
+                                <th style="width:3em">{{line}}</th>
+                                <th style="width:3em">{{column}}</th>
+                                <th style="width:5em">{{type}}</th>
+                                <th>{{message}}</th>
+                            </tr>
+                            {{/table_header}}
+                        </thead>
+                        <tbody>
+                            {{#messages}}
+                            <tr>
+                                <td style="width:3em">{{line}}</td>
+                                <td style="width:3em">{{column}}</td>
+                                <td style="width:5em">{{type}}</td>
+                                <td>{{message}}</td>
+                            </tr>
+                            {{/messages}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{/content}}
+        </div>
+        {{/files}}
+    </body>
+</html>

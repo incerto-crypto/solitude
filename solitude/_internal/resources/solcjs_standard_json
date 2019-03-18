@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var solc = require('./index.js');
+
+var argv = require('yargs')
+  .usage('Usage: $0 [options]')
+  .option('version', {
+    describe: 'Show version and exit.',
+    type: 'boolean'
+  })
+  .version(solc.version())
+  .showHelpOnFail(true)
+  .help().argv;
+
+var input = fs.readFileSync("/dev/stdin", "utf8");
+var output = solc.compileStandardWrapper(input);
+
+// from solc-js
+try {
+  var inputJSON = smtchecker.handleSMTQueries(JSON.parse(input), JSON.parse(output), smtsolver.smtSolver);
+  if (inputJSON) {
+    output = solc.compileStandardWrapper(JSON.stringify(inputJSON));
+  }
+}
+catch (e) {
+  var addError = {
+    component: "general",
+    formattedMessage: e.toString(),
+    message: e.toString(),
+    type: "Warning"
+  };
+
+  var outputJSON = JSON.parse(output);
+  if (!outputJSON.errors) {
+    outputJSON.errors = []
+  }
+  outputJSON.errors.push(addError);
+  output = JSON.stringify(outputJSON);
+}
+
+fs.writeSync(1, output);
+fs.fsyncSync(1);
+
+process.exit(0);
