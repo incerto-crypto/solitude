@@ -1,5 +1,7 @@
 # Solitude `preview`
 
+[![Build Status](https://travis-ci.com/incerto-crypto/solitude-examples.svg?branch=master)](https://travis-ci.com/incerto-crypto/solitude-examples)
+
 `[Warning]` This project is currently in alpha stage.
 
 A Python-based development framework to deploy, interact, test and debug your Solidity contracts. 
