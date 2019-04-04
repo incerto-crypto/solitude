@@ -1,6 +1,6 @@
 # Solitude `preview`
 
-[![Build Status](https://travis-ci.com/incerto-crypto/solitude-examples.svg?branch=master)](https://travis-ci.com/incerto-crypto/solitude-examples)
+[![Build Status](https://travis-ci.com/incerto-crypto/solitude.svg?branch=master)](https://travis-ci.com/incerto-crypto/solitude)
 
 `[Warning]` This project is currently in alpha stage.
 
