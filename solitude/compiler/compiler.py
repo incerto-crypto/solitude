@@ -9,7 +9,7 @@ import copy
 import json
 from io import StringIO
 from solitude.compiler.sourcelist import SourceList
-from solitude.compiler.solc_wrapper import SolcWrapper
+from solitude.compiler.solc_wrapper import SolcWrapper as Solc
 from solitude.errors import CompilerError, FileMessage
 
 
@@ -21,7 +21,7 @@ class CompiledSources:
         if contract_name in self._contracts:
             raise CompilerError([FileMessage(
                 type="duplicate",
-                filename=contract_name,
+                unitname=contract_name,
                 line=None,
                 column=None,
                 message="Duplicate contract name found")])
@@ -52,42 +52,43 @@ class CompiledSources:
 
 
 class Compiler(SourceList):
+    Out = Solc.Out
+
     OUTPUT_VALUES = [
-        "ast",
-        "abi",
-        "evm.bytecode.object",
-        "evm.bytecode.opcodes",
-        "evm.bytecode.sourceMap",
-        "evm.bytecode.linkReferences",
-        "evm.deployedBytecode.object",
-        "evm.deployedBytecode.opcodes",
-        "evm.deployedBytecode.sourceMap",
-        "evm.deployedBytecode.linkReferences"
+        Solc.Out.AST,
+        Solc.Out.ABI,
+        Solc.Out.DEPLOY_OBJECT,
+        # Solc.Out.DEPLOY_OPCODES,
+        Solc.Out.DEPLOY_SOURCEMAP,
+        # Solc.Out.DEPLOY_LINKREFS,
+        Solc.Out.RUNTIME_OBJECT,
+        # Solc.Out.RUNTIME_OPCODES,
+        Solc.Out.RUNTIME_SOURCEMAP,
+        # Solc.Out.RUNTIME_LINKREFS,
     ]
 
     def __init__(self, executable: str, optimize: Optional[int]=None):
         super().__init__()
         self._executable = executable
-        self._solc = SolcWrapper(
+        self._solc = Solc(
             executable=executable,
-            combined_json=Compiler.OUTPUT_VALUES,
-            optimize=optimize)
+            outputs=Compiler.OUTPUT_VALUES,
+            optimize=optimize,
+            warnings_as_errors=False)
 
     def compile(self) -> CompiledSources:
         """Compile all contracts
         """
         try:
             compiled = CompiledSources()
-            compiler_outputs = []  # type: List[Dict[str, dict]]
-            if self._file_sources:
-                compiler_outputs.append(
-                    self._solc.compile_files(self._file_sources))
+            text_sources = {}
             for source_name, source in self._text_sources:
-                compiler_outputs.append(
-                    self._solc.compile_source(source, "source#" + source_name))
-            for output_dict in compiler_outputs:
-                for (source_path, contract_name), contract in output_dict.items():
-                    compiled.add_contract(contract_name, contract)
+                text_sources[source_name] = source
+
+            output_dict = self._solc.compile(source_files=self._file_sources, source_strings=text_sources)
+
+            for (source_path, contract_name), contract in output_dict.items():
+                compiled.add_contract(contract_name, contract)
             return compiled
         finally:
             self._clear_sources()

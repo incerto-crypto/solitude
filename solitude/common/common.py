@@ -17,7 +17,7 @@ TransactionInfo = namedtuple('TransactionInfo', [
 
 FileMessage = namedtuple("FileMessage", [
     "type",
-    "filename",
+    "unitname",
     "line",
     "column",
     "message"])
@@ -25,7 +25,7 @@ FileMessage = namedtuple("FileMessage", [
 
 def file_message_format(m: FileMessage):
     return "%s:%s:%s: %s: %s" % (
-        m.filename, m.line, m.column, m.type, m.message)
+        m.unitname, m.line, m.column, m.type, m.message)
 
 
 def bhex(b: bytes, pad=None, prefix=True):

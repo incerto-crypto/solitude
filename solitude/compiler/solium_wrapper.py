@@ -73,7 +73,7 @@ def _decode_linter_output(out, stdin_alias: str) -> List[FileMessage]:
                 err_type = m.group(4).lower()
                 errors.append(FileMessage(
                     type=err_type,
-                    filename=err_file,
+                    unitname=err_file,
                     line=err_line,
                     column=err_col,
                     message=err_msg))

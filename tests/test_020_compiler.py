@@ -107,7 +107,7 @@ def test_0004_compile_duplicate_name(tooldir, tool_solc):
         assert len(err.messages) == 1
         m = err.messages[0]
         assert m.type == "duplicate"
-        assert m.filename == CONTRACT_NAME
+        assert m.unitname == CONTRACT_NAME
     else:
         pytest.fail("Duplicate contract name not caught by compiler")
 
@@ -130,7 +130,7 @@ def test_0005_compile_syntax_error(tool_solc):
         assert len(err.messages) >= 1
         m = err.messages[0]
         assert m.type == "error"
-        assert m.filename == "source#" + SOURCE_NAME
+        assert m.unitname == SOURCE_NAME
         assert m.line == 1 + find_line(TEST_CONTRACT, "{string_literal}")
     else:
         pytest.fail("Syntax error not caught by compiler")

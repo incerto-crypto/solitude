@@ -76,7 +76,7 @@ def test_0002_interactive(sol: SOL):
     with sol.account("attila"):
         tx = Fibonacci.fib(7)
 
-    LINE10_BP = "source#TestContract:10"
+    LINE10_BP = "TestContract:10"
     LINE10_CODE = "if (n < 2)"
     var_template = r"uint256\s+{name}\s*=\s*{val}(\s|;|$|\r|\n)"
     fn_template = r"{name}\(\s*uint256\s+{argname}\s*=\s*{argval}\s*\)"
@@ -87,11 +87,11 @@ def test_0002_interactive(sol: SOL):
     # debugger.oui.dbg._dbg._contracts
 
     out = onecmd(debugger, buf, "break %s" % LINE10_BP)
-    # [I] Breakpoint Added: 'source#TestContract:10'
+    # [I] Breakpoint Added: 'TestContract:10'
     assert LINE10_BP in out
 
     out = onecmd(debugger, buf, "continue")
-    # [I] Breakpoint: source#TestContract:10:16
+    # [I] Breakpoint: TestContract:10:16
     # (code...)
     assert LINE10_BP in out
     assert LINE10_CODE in out
@@ -111,7 +111,7 @@ def test_0002_interactive(sol: SOL):
     assert re.search(fn_template.format(name="fib", argname="n", argval="7"), out) is not None
 
     out = onecmd(debugger, buf, "continue")
-    # [I] Breakpoint: source#TestContract:10:16
+    # [I] Breakpoint: TestContract:10:16
     # (code...)
     assert LINE10_BP in out
     assert LINE10_CODE in out
@@ -138,11 +138,11 @@ def test_0002_interactive(sol: SOL):
     assert re.search(var_template.format(name="n", val="7"), out) is not None
 
     out = onecmd(debugger, buf, "info breakpoints")
-    # [I] Breakpoint: source#TestContract:10
+    # [I] Breakpoint: TestContract:10
     assert LINE10_BP in out
 
     out = onecmd(debugger, buf, "delete %s" % LINE10_BP)
-    # [I] Breakpoint Deleted: 'source#TestContract:10'
+    # [I] Breakpoint Deleted: 'TestContract:10'
 
     out = onecmd(debugger, buf, "list")
     # (code...)
