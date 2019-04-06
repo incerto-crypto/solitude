@@ -1,0 +1,516 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>solitude.client.debug_trace &mdash; solitude 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> solitude
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.html">solitude module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.client.html">solitude.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.compiler.html">solitude.compiler module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.testing.html">solitude.testing module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.tools.html">solitude.tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.server.html">solitude.server module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">solitude</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../solitude.html">solitude</a> &raquo;</li>
+        
+      <li>solitude.client.debug_trace</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for solitude.client.debug_trace</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2019, Solitude Developers</span>
+<span class="c1">#</span>
+<span class="c1"># This source code is licensed under the BSD-3-Clause license found in the</span>
+<span class="c1"># COPYING file in the root directory of this source tree</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">from</span> <span class="nn">solitude.client</span> <span class="k">import</span> <span class="n">RPCClient</span>
+<span class="kn">from</span> <span class="nn">solitude.compiler</span> <span class="k">import</span> <span class="n">CompiledSources</span>
+
+
+<span class="n">TraceStackItem</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;TraceStackItem&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;contract_name&quot;</span><span class="p">,</span> <span class="s2">&quot;decoder&quot;</span><span class="p">])</span>
+
+<span class="n">SourceMapping</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;SourceMapping&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;lines&quot;</span><span class="p">,</span> <span class="s2">&quot;line_index&quot;</span><span class="p">,</span> <span class="s2">&quot;line_start&quot;</span><span class="p">,</span> <span class="s2">&quot;line_pos&quot;</span><span class="p">])</span>
+
+<span class="n">TraceStep</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;TraceStep&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;contract_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pc&quot;</span><span class="p">,</span> <span class="s2">&quot;op&quot;</span><span class="p">,</span> <span class="s2">&quot;stack&quot;</span><span class="p">,</span> <span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="s2">&quot;storage&quot;</span><span class="p">,</span> <span class="s2">&quot;gas&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">,</span> <span class="s2">&quot;fileno&quot;</span><span class="p">,</span> <span class="s2">&quot;jumptype&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;code&quot;</span><span class="p">])</span>
+
+<span class="n">CallStackElement</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CallStackElement&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;prev&quot;</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">])</span>
+<span class="n">CallStackEvent</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CallStackEvent&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="DebugTracer"><a class="viewcode-back" href="../../../solitude.client.html#solitude.client.DebugTracer">[docs]</a><span class="k">class</span> <span class="nc">DebugTracer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rpc</span><span class="p">:</span> <span class="n">RPCClient</span><span class="p">,</span> <span class="n">compiled</span><span class="p">:</span> <span class="n">CompiledSources</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span> <span class="o">=</span> <span class="n">rpc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, dict]</span>
+        <span class="k">for</span> <span class="n">contract_name</span><span class="p">,</span> <span class="n">contract</span> <span class="ow">in</span> <span class="n">compiled</span><span class="o">.</span><span class="n">contracts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">[</span><span class="n">contract_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">contract</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract</span> <span class="o">=</span> <span class="n">AddressToContract</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span>
+            <span class="n">rpc</span><span class="p">,</span>
+            <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;bin&quot;</span><span class="p">]))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srcmapper</span> <span class="o">=</span> <span class="n">SourceMapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DebugTracer.trace_iter"><a class="viewcode-back" href="../../../solitude.client.html#solitude.client.DebugTracer.trace_iter">[docs]</a>    <span class="k">def</span> <span class="nf">trace_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txhash</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">TraceStep</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">TraceStep</span><span class="p">]]]:</span>
+        <span class="n">txhash_hex</span> <span class="o">=</span> <span class="s2">&quot;0x&quot;</span> <span class="o">+</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">txhash</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">transaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span><span class="o">.</span><span class="n">eth_getTransactionByHash</span><span class="p">(</span><span class="n">txhash_hex</span><span class="p">)</span>
+        <span class="n">debug_trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span><span class="o">.</span><span class="n">debug_traceTransaction</span><span class="p">(</span><span class="n">txhash_hex</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">logs</span> <span class="o">=</span> <span class="n">debug_trace</span><span class="p">[</span><span class="s2">&quot;structLogs&quot;</span><span class="p">]</span>
+        <span class="n">callstack</span> <span class="o">=</span> <span class="n">CallStack</span><span class="p">()</span>
+
+        <span class="n">tracestack</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[TraceStackItem]</span>
+        <span class="n">prev_depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
+            <span class="n">depth</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">gas</span><span class="p">,</span> <span class="n">memory</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">storage</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">log</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;pc&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;op&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;gas&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;memory&quot;</span><span class="p">],</span> 
+                <span class="n">log</span><span class="p">[</span><span class="s2">&quot;stack&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;storage&quot;</span><span class="p">])</span>
+
+            <span class="c1"># when entering call, create a new decoder for the relevant contract</span>
+            <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="n">prev_depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># enter CALL</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">address</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># contract address is in element -2 of stack</span>
+                    <span class="n">address</span> <span class="o">=</span> <span class="s2">&quot;0x&quot;</span> <span class="o">+</span> <span class="n">logs</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="s2">&quot;stack&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">24</span><span class="p">:]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">call_contract_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract</span><span class="o">.</span><span class="n">get_contract_id</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                    <span class="n">contract</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">[</span><span class="n">call_contract_name</span><span class="p">]</span>
+                    <span class="n">tracestack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TraceStackItem</span><span class="p">(</span>
+                        <span class="n">contract_name</span><span class="o">=</span><span class="n">call_contract_name</span><span class="p">,</span>
+                        <span class="n">decoder</span><span class="o">=</span><span class="n">FrameDecoder</span><span class="p">(</span><span class="n">contract</span><span class="o">=</span><span class="n">contract</span><span class="p">)))</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">tracestack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TraceStackItem</span><span class="p">(</span>
+                        <span class="n">contract_name</span><span class="o">=</span><span class="n">call_contract_name</span><span class="p">,</span>
+                        <span class="n">decoder</span><span class="o">=</span><span class="n">FrameDecoderDummy</span><span class="p">()))</span>
+            <span class="k">elif</span> <span class="n">depth</span> <span class="o">==</span> <span class="n">prev_depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">tracestack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">prev_depth</span> <span class="o">=</span> <span class="n">depth</span>
+
+            <span class="c1"># use the relevant decoder to map source</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">tracestack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">get_mapping</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+            <span class="n">st</span><span class="p">,</span> <span class="n">le</span><span class="p">,</span> <span class="n">fi</span><span class="p">,</span> <span class="n">ju</span> <span class="o">=</span> <span class="n">mapping</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">srcmapper</span><span class="o">.</span><span class="n">get_source</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">contract_name</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">le</span><span class="p">,</span> <span class="n">fi</span><span class="p">)</span>
+
+            <span class="n">step</span> <span class="o">=</span> <span class="n">TraceStep</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">contract_name</span><span class="o">=</span><span class="n">frame</span><span class="o">.</span><span class="n">contract_name</span><span class="p">,</span>
+                <span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="n">memory</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">,</span> <span class="n">gas</span><span class="o">=</span><span class="n">gas</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">st</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">le</span><span class="p">,</span> <span class="n">fileno</span><span class="o">=</span><span class="n">fi</span><span class="p">,</span> <span class="n">jumptype</span><span class="o">=</span><span class="n">ju</span><span class="p">,</span>
+                <span class="n">code</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+            <span class="n">callstack_event</span> <span class="o">=</span> <span class="n">callstack</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">step</span><span class="p">,</span> <span class="n">callstack_event</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">CallStack</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[[]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">TraceStep</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallStackEvent</span><span class="p">:</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">event_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">prev_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="c1"># print(&quot;op %s prev %s&quot; % (op, prev_op))</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;jumpdest&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prev_op</span> <span class="o">==</span> <span class="s1">&#39;jump&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">pc</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">prev</span><span class="o">.</span><span class="n">pc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;pop&quot;</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span><span class="o">.</span><span class="n">jumptype</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+                    <span class="n">event_data</span> <span class="o">=</span> <span class="n">CallStackElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+                    <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">step</span><span class="o">.</span><span class="n">pc</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">prev_op</span> <span class="o">==</span> <span class="s1">&#39;call&#39;</span><span class="p">:</span>
+            <span class="n">event_data</span> <span class="o">=</span> <span class="n">CallStackElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">event_data</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">prev_op</span> <span class="o">==</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;pop&quot;</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prev_step</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="k">return</span> <span class="n">CallStackEvent</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">event_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">IFrameDecoder</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contract</span> <span class="o">=</span> <span class="n">contract</span>
+
+    <span class="k">def</span> <span class="nf">get_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">FrameDecoderDummy</span><span class="p">(</span><span class="n">IFrameDecoder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">contract</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FrameDecoder</span><span class="p">(</span><span class="n">IFrameDecoder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">contract</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contract</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bytecode</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contract</span><span class="p">[</span><span class="s2">&quot;bin-runtime&quot;</span><span class="p">])</span>
+
+        <span class="c1"># instruction address (bytes offset) to instruction number</span>
+        <span class="c1">#   which can be related to program counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_instruction_number</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">FrameDecoder</span><span class="o">.</span><span class="n">_map_address_to_instruction_number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bytecode</span><span class="p">))</span>
+
+        <span class="c1"># instruction address to start, length, fileid, jumptype</span>
+        <span class="c1">#   to find source code parts relevant to instruction address</span>
+        <span class="c1"># The source map in the compiler output is compressed, we need to</span>
+        <span class="c1">#   expand it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instruction_number_to_source</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">FrameDecoder</span><span class="o">.</span><span class="n">_decode_source_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contract</span><span class="p">[</span><span class="s2">&quot;srcmap-runtime&quot;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">get_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="n">instruction_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_instruction_number</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instruction_number_to_source</span><span class="p">[</span><span class="n">instruction_number</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">mapping</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_decode_source_map</span><span class="p">(</span><span class="n">srcmap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># the source map is a list of tuples (st, le, fi, ju)</span>
+        <span class="c1">#   st: start character in source code</span>
+        <span class="c1">#   le: lenght of code portion</span>
+        <span class="c1">#   fi: file number for this mapping</span>
+        <span class="c1">#   ju: jump type</span>
+
+        <span class="c1"># In the string, mappings are separated by &quot;;&quot; and elements of a mapping</span>
+        <span class="c1">#   are separated by &quot;:&quot;</span>
+
+        <span class="c1"># from https://github.com/ethereum/solidity/blob/develop/docs/miscellaneous.rst#source-mappings</span>
+        <span class="c1"># In order to compress these source mappings especially for bytecode, the following rules are used:</span>
+        <span class="c1">#   - If a field is empty, the value of the preceding element is used.</span>
+        <span class="c1">#   - If a : is missing, all following fields are considered empty.</span>
+
+        <span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">srcmap</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+            <span class="n">mv</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="k">else</span> <span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">le</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">else</span> <span class="n">last</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">fi</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span> <span class="k">else</span> <span class="n">last</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">ju</span> <span class="o">=</span> <span class="n">mv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mv</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span> <span class="k">else</span> <span class="n">last</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">le</span><span class="p">,</span> <span class="n">fi</span><span class="p">,</span> <span class="n">ju</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_map_address_to_instruction_number</span><span class="p">(</span><span class="n">bytecode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># all instructions have length 1, except PUSH1[0x60]..PUSH32[0x7f]</span>
+        <span class="c1"># which have length 2..33</span>
+        <span class="n">instr_address</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">instr_address</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">bytecode</span><span class="p">):</span>
+            <span class="n">instr</span> <span class="o">=</span> <span class="n">bytecode</span><span class="p">[</span><span class="n">instr_address</span><span class="p">]</span>
+            <span class="n">instr_length</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">instr</span> <span class="o">&gt;=</span> <span class="mh">0x60</span> <span class="ow">and</span> <span class="n">instr</span> <span class="o">&lt;=</span> <span class="mh">0x7f</span><span class="p">:</span>
+                <span class="n">instr_length</span> <span class="o">+=</span> <span class="n">instr</span> <span class="o">-</span> <span class="mh">0x5f</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">instr_length</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">instr_address</span> <span class="o">+=</span> <span class="n">instr_length</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">class</span> <span class="nc">SourcePosToLine</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splits</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[int]</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="n">source</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">line_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">line_index</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_splits</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">line_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_splits</span><span class="p">[</span><span class="n">line_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">line_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">line_index</span><span class="p">,</span> <span class="n">line_start</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span>
+
+
+<span class="k">class</span> <span class="nc">SourceMapper</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contracts</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span> <span class="o">=</span> <span class="n">contracts</span>
+        <span class="c1"># collect sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sourcepath_to_posmapper</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, SourcePosToLine]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contractname_fi_to_sourcepath</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[Tuple[str, int], str]</span>
+        <span class="k">for</span> <span class="n">contract_name</span><span class="p">,</span> <span class="n">contract</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sourcepath_to_posmapper</span><span class="p">[</span><span class="n">contract</span><span class="p">[</span><span class="s2">&quot;_solitude&quot;</span><span class="p">][</span><span class="s2">&quot;sourcePath&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">SourcePosToLine</span><span class="p">(</span><span class="n">contract</span><span class="p">[</span><span class="s2">&quot;_solitude&quot;</span><span class="p">][</span><span class="s2">&quot;source&quot;</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">source_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contract</span><span class="p">[</span><span class="s2">&quot;_solitude&quot;</span><span class="p">][</span><span class="s2">&quot;sourceList&quot;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_contractname_fi_to_sourcepath</span><span class="p">[(</span><span class="n">contract_name</span><span class="p">,</span> <span class="n">fi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">source_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nullposmapper</span> <span class="o">=</span> <span class="n">SourcePosToLine</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fi</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contractname_fi_to_sourcepath</span><span class="p">[(</span><span class="n">contract_name</span><span class="p">,</span> <span class="n">fi</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">get_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">st</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">le</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fi</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceMapping</span><span class="p">:</span>
+        <span class="n">source_path</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[str]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">source_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="n">contract_name</span><span class="p">,</span> <span class="n">fi</span><span class="p">)</span>
+            <span class="n">posmapper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sourcepath_to_posmapper</span><span class="p">[</span><span class="n">source_path</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">source_path</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">posmapper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nullposmapper</span>
+        <span class="n">line_index</span><span class="p">,</span> <span class="n">line_start</span> <span class="o">=</span> <span class="n">posmapper</span><span class="o">.</span><span class="n">line_of</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+        <span class="n">line_pos</span> <span class="o">=</span> <span class="n">st</span> <span class="o">-</span> <span class="n">line_start</span>
+        <span class="k">if</span> <span class="n">line_pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">line_pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">posmapper</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">SourceMapping</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">source_path</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">posmapper</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">lines</span><span class="o">=</span><span class="n">posmapper</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span>
+            <span class="n">line_index</span><span class="o">=</span><span class="n">line_index</span><span class="p">,</span>
+            <span class="n">line_start</span><span class="o">=</span><span class="n">line_start</span><span class="p">,</span>
+            <span class="n">line_pos</span><span class="o">=</span><span class="n">line_pos</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AddressToContract</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract_id</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, str]</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">RPCClient</span><span class="p">,</span> <span class="n">contracts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
+        <span class="n">earliest_block</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">eth_getBlockByNumber</span><span class="p">(</span><span class="s2">&quot;earliest&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">start_block</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">earliest_block</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">latest_block</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">eth_getBlockByNumber</span><span class="p">(</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">end_block</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">latest_block</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">:],</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">block_number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_block</span><span class="p">,</span> <span class="n">end_block</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">eth_getBlockByNumber</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">block_number</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[</span><span class="s2">&quot;transactions&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">transaction</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">receipt</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">eth_getTransactionReceipt</span><span class="p">(</span><span class="n">transaction</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">])</span>
+                    <span class="n">contract_address</span> <span class="o">=</span> <span class="n">receipt</span><span class="p">[</span><span class="s2">&quot;contractAddress&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">contract_address</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">contract_bytecode</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">transaction</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">:])</span>
+                        <span class="n">contract_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_contract</span><span class="p">(</span><span class="n">contracts</span><span class="p">,</span> <span class="n">contract_bytecode</span><span class="p">)</span>
+                        <span class="c1"># print(&quot;ContractAddress: %s&quot; % contract_address)</span>
+                        <span class="c1"># print(&quot;ContractID: %s&quot; % repr(contract_id))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract_id</span><span class="p">[</span><span class="n">contract_address</span><span class="p">]</span> <span class="o">=</span> <span class="n">contract_id</span>
+
+    <span class="k">def</span> <span class="nf">_search_contract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contracts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span> <span class="n">contract_bytecode</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">match_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">match_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">bytecode</span> <span class="ow">in</span> <span class="n">contracts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bytecode</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">match_length</span> <span class="ow">and</span> <span class="n">contract_bytecode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bytecode</span><span class="p">):</span>
+                <span class="n">match_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bytecode</span><span class="p">)</span>
+                <span class="n">match_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="n">match_name</span>
+
+    <span class="k">def</span> <span class="nf">get_contract_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_contract_id</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Solitude Developers
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

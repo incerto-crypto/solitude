@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>solitude.common.factory &mdash; solitude 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> solitude
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.html">solitude module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.client.html">solitude.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.compiler.html">solitude.compiler module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.testing.html">solitude.testing module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.tools.html">solitude.tools module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.server.html">solitude.server module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">solitude</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../solitude.html">solitude</a> &raquo;</li>
+        
+      <li>solitude.common.factory</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for solitude.common.factory</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2019, Solitude Developers</span>
+<span class="c1">#</span>
+<span class="c1"># This source code is licensed under the BSD-3-Clause license found in the</span>
+<span class="c1"># COPYING file in the root directory of this source tree</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">solitude._internal.config_util</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">parse_port_range</span><span class="p">,</span> <span class="n">parse_server_account</span><span class="p">,</span> <span class="n">parse_path</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">solitude.errors</span> <span class="k">import</span> <span class="n">SetupError</span>
+<span class="kn">from</span> <span class="nn">solitude.tools</span> <span class="k">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
+    <span class="n">Tool</span><span class="p">,</span> <span class="n">GanacheCli</span><span class="p">,</span> <span class="n">Solc</span><span class="p">,</span> <span class="n">Solium</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">solitude.client</span> <span class="k">import</span> <span class="n">ETHClient</span>
+<span class="kn">from</span> <span class="nn">solitude.compiler</span> <span class="k">import</span> <span class="n">Compiler</span><span class="p">,</span> <span class="n">CompiledSources</span><span class="p">,</span> <span class="n">Linter</span>
+<span class="kn">from</span> <span class="nn">solitude.server</span> <span class="k">import</span> <span class="n">RPCTestServer</span>
+<span class="kn">from</span> <span class="nn">solitude.common.dump</span> <span class="k">import</span> <span class="n">Dump</span><span class="p">,</span> <span class="n">unique_dumpname</span>
+
+
+<div class="viewcode-block" id="Factory"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory">[docs]</a><span class="k">class</span> <span class="nc">Factory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a Factory object</span>
+
+<span class="sd">    The Factory object can be used to create pre-configured objects from a</span>
+<span class="sd">    solitude configuration dictionary.</span>
+
+<span class="sd">    :param cfg: solitude configuration dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Tools.Required&quot;</span><span class="p">]}</span>
+        <span class="n">tooldir</span> <span class="o">=</span> <span class="n">parse_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Tools.Directory&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">tooldir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Directory Tools.Directory (&#39;</span><span class="si">%s</span><span class="s2">&#39;) not found&quot;</span> <span class="o">%</span> <span class="n">tooldir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;Solc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="n">tool</span> <span class="o">=</span> <span class="n">Solc</span><span class="p">(</span><span class="n">tooldir</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Tools.Solc.Version&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">have</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;Solc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+        <span class="k">if</span> <span class="s2">&quot;GanacheCli&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="n">tool</span> <span class="o">=</span> <span class="n">GanacheCli</span><span class="p">(</span><span class="n">tooldir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Tools.GanacheCli.Version&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">have</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;GanacheCli&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+        <span class="k">if</span> <span class="s2">&quot;Solium&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="n">tool</span> <span class="o">=</span> <span class="n">Solium</span><span class="p">(</span><span class="n">tooldir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Tools.Solium.Version&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">have</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;Solium&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+        <span class="k">for</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">tool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Tool not found: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">tool_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Factory.create_compiler"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory.create_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">create_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_contract_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Compiler</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a Compiler object, used to compile contracts with solc.</span>
+
+<span class="sd">        :param add_contract_dir: whether to load contracts from the directory</span>
+<span class="sd">            specified in Compiler.ContractDir or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Solc&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Tool &#39;Solc&#39; not configured&quot;</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="n">Compiler</span><span class="p">(</span>
+            <span class="n">executable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;Solc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solc&quot;</span><span class="p">),</span>
+            <span class="n">optimize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.Optimize&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">add_contract_dir</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.ContractDir&quot;</span><span class="p">]:</span>
+            <span class="n">compiler</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.ContractDir&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">compiler</span></div>
+
+<div class="viewcode-block" id="Factory.create_server"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory.create_server">[docs]</a>    <span class="k">def</span> <span class="nf">create_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RPCTestServer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a RPCTestServer object, used to start a ganache test node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Solc&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Tool &#39;GanacheCli&#39; not configured&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">RPCTestServer</span><span class="p">(</span>
+            <span class="n">executable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;GanacheCli&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ganache-cli&quot;</span><span class="p">),</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">parse_port_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Server.Port&quot;</span><span class="p">]),</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Server.Host&quot;</span><span class="p">],</span>
+            <span class="n">gasprice</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Server.GasPrice&quot;</span><span class="p">],</span>
+            <span class="n">gaslimit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Server.GasLimit&quot;</span><span class="p">],</span>
+            <span class="n">accounts</span><span class="o">=</span><span class="p">[</span><span class="n">parse_server_account</span><span class="p">(</span><span class="n">account</span><span class="p">)</span> <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Server.Accounts&quot;</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="Factory.create_client"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory.create_client">[docs]</a>    <span class="k">def</span> <span class="nf">create_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ETHClient</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a ETHClient object, used to interact with an ethereum node.</span>
+
+<span class="sd">        :param endpoint: if set, it overrides the Client.Endpoint setting in the configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.Endpoint&quot;</span><span class="p">]</span>
+        <span class="n">compiled</span> <span class="o">=</span> <span class="n">CompiledSources</span><span class="p">()</span>
+        <span class="n">contract_build_dir</span> <span class="o">=</span> <span class="n">parse_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.ContractBuildDir&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">contract_build_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">compiled</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span>
+                <span class="n">contract_build_dir</span><span class="p">)</span>
+        <span class="n">dump</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.EnableGasLog&quot;</span><span class="p">]:</span>
+            <span class="n">dump_filename</span> <span class="o">=</span> <span class="n">unique_dumpname</span><span class="p">(</span>
+                <span class="n">parse_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.GasLogDir&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;gas&quot;</span><span class="p">)</span>
+            <span class="n">dump</span> <span class="o">=</span> <span class="n">Dump</span><span class="p">(</span><span class="n">dump_filename</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ETHClient</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">compiled</span><span class="o">=</span><span class="n">compiled</span><span class="p">,</span> <span class="n">dump</span><span class="o">=</span><span class="n">dump</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">set_default_gas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.DefaultGas&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">account_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Client.AccountAliases&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">set_account_alias</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">account_num</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">client</span></div>
+
+<div class="viewcode-block" id="Factory.create_linter"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory.create_linter">[docs]</a>    <span class="k">def</span> <span class="nf">create_linter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_contract_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Linter</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a Linter object, used to invoke solium.</span>
+
+<span class="sd">        :param add_contract_dir: whether to load contracts from the directory</span>
+<span class="sd">            specified in Compiler.ContractDir or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Solium&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Tool &#39;Solium&#39; not configured&quot;</span><span class="p">)</span>
+        <span class="n">linter</span> <span class="o">=</span> <span class="n">Linter</span><span class="p">(</span>
+            <span class="n">executable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">[</span><span class="s2">&quot;Solium&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solium&quot;</span><span class="p">),</span>
+            <span class="n">plugins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.Lint.Plugins&quot;</span><span class="p">],</span>
+            <span class="n">rules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.Lint.Rules&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">add_contract_dir</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.ContractDir&quot;</span><span class="p">]:</span>
+            <span class="n">linter</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">[</span><span class="s2">&quot;Compiler.ContractDir&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">linter</span></div>
+
+<div class="viewcode-block" id="Factory.have_tool"><a class="viewcode-back" href="../../../solitude.html#solitude.Factory.have_tool">[docs]</a>    <span class="k">def</span> <span class="nf">have_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if a tool is installed</span>
+
+<span class="sd">        :param name: name of the tool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Solitude Developers
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
