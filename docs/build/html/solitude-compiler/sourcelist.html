@@ -173,26 +173,67 @@
 <dl class="class">
 <dt>
 <em class="property">class </em><code class="descclassname">solitude.compiler.</code><code class="descname">SourceList</code><a class="reference internal" href="../_modules/solitude/compiler/sourcelist.html#SourceList"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Store contracts references</p>
+<p>Store asbolute path for contracts (.sol) and save the list of inline
+contracts. Inline contracts are tuples made by tow strings: the inline
+contract name and the contract code.</p>
 <dl class="attribute">
-<dt>
-<code class="descname">SOURCE_FILE_EXT_FILTER</code><em class="property"> = ['.sol']</em></dt>
-<dd></dd></dl>
+<dt id="solitude.compiler.SourceList._file_sources">
+<code class="descname">_file_sources</code><a class="headerlink" href="#solitude.compiler.SourceList._file_sources" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of the contracts’ asbolute paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.compiler.SourceList._text_sources">
+<code class="descname">_text_sources</code><a class="headerlink" href="#solitude.compiler.SourceList._text_sources" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of inline contracts tuples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <code class="descname">add_directory</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solitude/compiler/sourcelist.html#SourceList.add_directory"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
+<dd><p>Scan a directory and add the contracts path to the file source list.</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <code class="descname">add_files</code><span class="sig-paren">(</span><em>sources: Union[str, List[str]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solitude/compiler/sourcelist.html#SourceList.add_files"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
+<dd><p>Add a file path or a list of file paths to the file source list.</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <code class="descname">add_string</code><span class="sig-paren">(</span><em>name: str</em>, <em>source: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solitude/compiler/sourcelist.html#SourceList.add_string"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
+<dd><p>Add a inline contract to the text sources list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – Inline contract name.</li>
+<li><strong>source</strong> – The source code of the inline contract.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 

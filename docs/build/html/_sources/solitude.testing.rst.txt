@@ -1,5 +1,5 @@
-solitude.testing module
-=======================
+solitude.testing
+================
 
 .. automodule:: solitude.testing
     :members:

@@ -1,5 +1,5 @@
-solitude.client module
-======================
+solitude.client
+===============
 
 .. automodule:: solitude.client
     :members:

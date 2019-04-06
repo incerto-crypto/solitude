@@ -1,5 +1,5 @@
-solitude.server module
-======================
+solitude.server
+===============
 
 .. automodule:: solitude.server
     :members:

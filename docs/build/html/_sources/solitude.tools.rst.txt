@@ -1,5 +1,5 @@
-solitude.tools module
-=====================
+solitude.tools
+==============
 
 .. automodule:: solitude.tools
     :members:

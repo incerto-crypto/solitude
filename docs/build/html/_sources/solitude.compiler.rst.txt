@@ -1,8 +1,7 @@
-solitude.compiler module
-========================
+solitude.compiler
+=================
 
 .. automodule:: solitude.compiler
-    :members:
     :show-inheritance:
 
 .. toctree::
