@@ -7,16 +7,16 @@
 class EnumType:
     @classmethod
     def get_values(cls) -> list:
-        return list(cls._iter_values())
+        return list(cls.iter_values())
 
     @classmethod
-    def _iter_values(cls) -> list:
+    def iter_values(cls):
         return (
             v for k, v in cls.__dict__.items() if not (k.startswith("_") or callable(v)))
 
     @classmethod
     def has_value(cls, value) -> bool:
-        return any(value == v for v in cls._iter_values())
+        return any(value == v for v in cls.iter_values())
 
     @classmethod
     def value_assert(cls, value):

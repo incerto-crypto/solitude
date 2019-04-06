@@ -5,22 +5,19 @@
 
 from typing import List  # noqa
 import os
+import io
 import pystache
 import solitude
 from solitude.common import FileMessage
+from solitude._internal import copy_from_url
 
 
 class FileMessageReport:
     def __init__(self, template: str, project: str, component: str):
-        if os.path.isfile(template):
-            template_path = template
-        else:
-            template_path = os.path.join(
-                os.path.dirname(solitude.__file__),
-                "resources",
-                "report." + template)
-        with open(template_path, "r") as fp:
-            self._template = pystache.parse(fp.read())
+        template_data = io.BytesIO()
+        copy_from_url(template, template_data)
+        template_data.seek(0)
+        self._template = pystache.parse(template_data.read())
         self._data = {
             "project": project,
             "component": component,

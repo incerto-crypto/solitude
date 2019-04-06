@@ -1,0 +1,9 @@
+{
+    "Solc.URL.Linux": "https://github.com/ethereum/solidity/releases/download/v{version}/solc-static-linux",
+    "Solc.URL.Windows": "https://github.com/ethereum/solidity/releases/download/v{version}/solidity-windows.zip",
+    "Solc.URL.Darwin": "https://dl.bintray.com/solitude-bin/solitude-unofficial-solc-builds/darwin/{version}/solc",
+    "GanacheCli.PackageLock": "resource://lock.GanacheCli-{version}.json",
+    "Solium.PackageLock": "resource://lock.Solium-{version}.json",
+    "DebugHooks": {
+    }
+}

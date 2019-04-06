@@ -60,19 +60,23 @@ def yaml_ordered_dump(data, stream=None, Dumper=MySafeDumper, **kwargs):
     return yaml.dump(data, stream, OrderedDumper, **kwargs)
 
 
-def read_config_file(path: str):
-    """Read a solitude configuration from yaml or json file.
-
-    :param path: path to configuration file
-    """
+def read_yaml_or_json_file(path: str):
     if os.path.splitext(path)[-1] not in (".json", ".yaml"):
         raise SetupError("Configuration file must be either .yaml or .json")
-    cfg = config_schema_to_defaults(SCHEMA)
     with open(path, 'r') as fp:
         if path.endswith(".json"):
             cfg_from_file = json.load(fp, object_pairs_hook=OrderedDict)
         else:
             cfg_from_file = yaml_ordered_load(fp)
+
+
+def read_config_file(path: str):
+    """Read a solitude configuration from yaml or json file.
+
+    :param path: path to configuration file
+    """
+    cfg_from_file = read_yaml_or_json_file(path)
+    cfg = config_schema_to_defaults(SCHEMA)
     cfg.update(cfg_from_file)
     update_cfg_with_env_overrides(cfg)
     try:

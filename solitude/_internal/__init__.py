@@ -5,8 +5,9 @@
 
 from solitude._internal.enum_type import EnumType
 from solitude._internal.error_util import (
-    internal_assert, isfile_assert, value_assert, RaiseForParam)
-from solitude._internal.resource_util import get_resource_path
+    internal_assert, isfile_assert, value_assert, type_assert, RaiseForParam)
+from solitude._internal.resource_util import (
+    get_resource_path, get_global_config, copy_from_url)
 from solitude._internal import config_schema
 
 
@@ -20,7 +21,12 @@ __all__ = [
     "internal_assert",
     "isfile_assert",
     "value_assert",
+    "type_assert",
     "RaiseForParam",
 
-    "Config"
+    "Config",
+
+    "get_resource_path",
+    "get_global_config",
+    "copy_from_url"
 ]

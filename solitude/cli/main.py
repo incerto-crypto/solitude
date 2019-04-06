@@ -11,11 +11,15 @@ import os
 import argparse
 import datetime
 import binascii
+import json
 from solitude.errors import CompilerError, CLIError
 from solitude import (
     Factory, make_default_config, write_config_file, read_config_file)
 from solitude.common import file_message_format
 from solitude.tools import Solc, GanacheCli, Solium
+
+from solitude._internal.config_util import read_yaml_or_json_file
+from solitude._internal.resource_util import update_global_config
 
 from solitude.cli.debug import main_debug, main_trace
 
@@ -24,6 +28,11 @@ def main_init(args):
     if os.path.exists(args.config):
         raise CLIError("%s already exists" % args.config)
     write_config_file(make_default_config(), args.config)
+
+
+def _update_global_config_from_file(path):
+    cfg_from_file = read_yaml_or_json_file(path)
+    update_global_config(cfg_from_file)
 
 
 def _iter_required_tools(cfg):
@@ -144,7 +153,8 @@ def txhash_type(txhash):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="./solitude.yaml", help="Configuration file")
+    parser.add_argument("--global-config", dest="global_config", type=str, help="Global configuration file")
+    parser.add_argument("-c", "--config", type=str, default="./solitude.yaml", help="Project configuration file")
     sub = parser.add_subparsers()
 
     # write default config
@@ -185,7 +195,7 @@ def main():
     p_lint.add_argument(
         "--report-template", dest="report_template",
         help="Path to report template",
-        default="filemessage.default.html")
+        default="resource://report.filemessage.default.html")
 
     p_server = sub.add_parser("server")
     p_server.set_defaults(func=main_server)
@@ -197,6 +207,8 @@ def main():
         parser.print_help()
         exit(1)
     try:
+        if args._global_config is not None:
+            _update_global_config_from_file(args.global_config)
         args.func(args)
     except CLIError as e:
         print("Error: %s" % str(e))

@@ -17,6 +17,15 @@ def value_assert(cond: bool, message: str):
         raise ValueError(message)
 
 
+def type_assert(instance, class_or_tuple, message=""):
+    if not isinstance(instance, class_or_tuple):
+        if isinstance(class_or_tuple, tuple):
+            raise TypeError(
+                "Expected one of %s" % repr(tuple(x.__name__ for x in class_or_tuple)) + message)
+        else:
+            raise TypeError("Expected %s" % repr(class_or_tuple.__name__) + message)
+
+
 def isfile_assert(path):
     if not isinstance(path, str) or not os.path.isfile(path):
         raise ValueError("File does not exist: %s" % repr(path))

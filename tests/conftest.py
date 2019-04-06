@@ -12,6 +12,18 @@ from solitude import make_default_config
 from solitude.server import kill_all_servers
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--internet",
+        action="store_true",
+        help="enable tests marked with 'internet' (lots of downloads)")
+
+
+def pytest_runtest_setup(item):
+    if 'internet' in item.keywords and not item.config.getoption("--internet"):
+        pytest.skip("'internet' tests disabled (enable with --internet)")
+
+
 DEFAULT_CONFIG = make_default_config()
 SOLIDITY_VERSION = DEFAULT_CONFIG["Tools.Solc.Version"]
 GANACHE_VERSION = DEFAULT_CONFIG["Tools.GanacheCli.Version"]

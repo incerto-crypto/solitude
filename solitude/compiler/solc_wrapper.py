@@ -13,7 +13,7 @@ import sys
 from solitude.errors import CompilerError
 from solitude.common import FileMessage
 from solitude._internal import (
-    EnumType, RaiseForParam, isfile_assert, value_assert)
+    EnumType, RaiseForParam, isfile_assert, value_assert, type_assert)
 
 
 UNDEFINED = "undefined"
@@ -79,8 +79,7 @@ class SolcWrapper:
                 self._outputs = _make_default_output_selection()
 
         with RaiseForParam("optimize"):
-            if optimize is not None:
-                value_assert(isinstance(optimize, int), "Expected integer")
+            type_assert(optimize, (int, type(None)))
             self._optimize = optimize
 
         with RaiseForParam("evm_version"):
@@ -108,7 +107,7 @@ class SolcWrapper:
         unitname_to_path = {}
         with RaiseForParam("source_files"):
             if source_files is not None:
-                value_assert(isinstance(source_files, list), "Expected list")
+                type_assert(source_files, list)
                 for path in source_files:
                     isfile_assert(path)
                     absolute_path = os.path.abspath(path)
@@ -118,7 +117,7 @@ class SolcWrapper:
         # include source strings in the JSON
         with RaiseForParam("source_strings"):
             if source_strings is not None:
-                value_assert(isinstance(source_strings, dict), "Expected dict (name: str -> code: str)")
+                type_assert(source_strings, dict, ", (name: str -> code: str)")
                 for unitname, contents in source_strings.items():
                     value_assert(
                         isinstance(unitname, str),
