@@ -5,9 +5,10 @@
 
 import datetime
 import pytest
-from solitude.compiler import CompiledSources, Compiler
+from solitude.common import ContractSourceList, ContractObjectList
+from solitude.compiler import Compiler
 from solitude.server import RPCTestServer, kill_all_servers
-from solitude.client import ETHClient, ContractWrapper, view, payable
+from solitude.client import ETHClient, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
 
@@ -23,7 +24,7 @@ def server(tool_ganache):
 
 
 def test_0001_run(server: RPCTestServer):
-    client = ETHClient(endpoint=server.endpoint, compiled=CompiledSources())
+    client = ETHClient(endpoint=server.endpoint, compiled=ContractObjectList())
     client.mine_block()
     blocktime = client.get_last_blocktime()
     now = datetime.datetime.now()
@@ -37,13 +38,14 @@ def test_0002_increase_time(server: RPCTestServer, tool_solc):
     TOLERANCE = 60  # seconds
     CONTRACT_NAME = "TestContract"
 
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
-    compiler.add_string(
+    sources.add_string(
         "test",
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME))
-    compiled = compiler.compile()
+    compiled = compiler.compile(sources)
 
     client = ETHClient(
         endpoint=server.endpoint,
@@ -69,13 +71,14 @@ def test_0002_increase_time(server: RPCTestServer, tool_solc):
 def test_0003_pay(server: RPCTestServer, tool_solc):
     CONTRACT_NAME = "TestContract"
 
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
-    compiler.add_string(
+    sources.add_string(
         "test",
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME))
-    compiled = compiler.compile()
+    compiled = compiler.compile(sources)
 
     client = ETHClient(
         endpoint=server.endpoint,
@@ -87,12 +90,10 @@ def test_0003_pay(server: RPCTestServer, tool_solc):
     assert value == 110
 
 
-class MyTestContractWrapper(ContractWrapper):
-    @view
+class MyTestContractWrapper(ContractBase):
     def getTime(self) -> int:
         return self.functions.getTime().call()
 
-    @payable
     def pay(self, value: int, valueSent: int):
         self.transact_sync("pay", value, value=valueSent)
         return self.functions.lastValue().call()

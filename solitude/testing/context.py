@@ -8,13 +8,11 @@ import os
 import shutil
 import tempfile
 from collections import OrderedDict
-from solitude.server import kill_all_servers
-from solitude._internal.config_util import read_config_file
-from solitude.client.eth_client import ETHClient, EventLog  # noqa
-from solitude.server.rpc_server import RPCTestServer  # noqa
-from solitude.compiler.compiler import Compiler  # noqa
-from solitude.common.factory import Factory
-from solitude.client.contract_wrapper import ContractWrapper
+
+from solitude.server import RPCTestServer, kill_all_servers  # noqa
+from solitude.client import ContractBase, ETHClient, EventLog  # noqa
+from solitude.compiler import Compiler  # noqa
+from solitude import Factory, read_config_file
 
 
 class TestingContext:
@@ -66,8 +64,8 @@ class TestingContext:
     def address(self, name: Union[str, int]):
         return self.client.address(name)
 
-    def deploy(self, contract_name: str, args=(), wrapper=ContractWrapper):
-        return self.client.deploy(contract_name, args, wrapper)
+    def deploy(self, contract_selector: str, args=(), wrapper=ContractBase):
+        return self.client.deploy(contract_selector, args, wrapper)
 
     def capture(self, pattern):  # noqa
         return self.client.capture(pattern)

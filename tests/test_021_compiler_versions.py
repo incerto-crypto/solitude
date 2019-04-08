@@ -6,6 +6,7 @@
 import os
 import pytest
 from solitude.tools import Solc
+from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
 from solitude.errors import CompilerError
 from conftest import tooldir  # noqa
@@ -30,6 +31,7 @@ def tool_solc(request, tooldir):
 
 @pytest.mark.internet
 def test_0001_compile_string(tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContractFromString"
     SOURCE_NAME = "test"
@@ -38,7 +40,7 @@ def test_0001_compile_string(tool_solc):
     if StrictVersion(tool_solc.version) < StrictVersion("0.4.22"):
         constructor = "function " + CONTRACT_NAME
 
-    compiler.add_string(
+    sources.add_string(
         SOURCE_NAME,
         TEST_CONTRACT.format(
             solidity_version=tool_solc.version,
@@ -47,8 +49,8 @@ def test_0001_compile_string(tool_solc):
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiled = compiler.compile()
-    assert(compiled.contracts[CONTRACT_NAME]["_solitude"]["contractName"] == CONTRACT_NAME)
+    compiled = compiler.compile(sources)
+    assert(compiled.select(CONTRACT_NAME)["_solitude"]["contractName"] == CONTRACT_NAME)
 
 
 TEST_CONTRACT = """\

@@ -181,6 +181,7 @@ class SolcWrapper:
                     contract.get("evm", {}).get("deployedBytecode", {}).get("sourceMap"))
                 out_contract_data["_solitude"] = {
                     "ast": unitname_to_ast[unitname],
+                    "unitName": unitname,
                     "contractName": contractname,
                     "sourceList": sourceid_to_unitname,
                     "sourcePath": source_path,

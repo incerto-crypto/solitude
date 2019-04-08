@@ -6,8 +6,9 @@
 import pytest
 import re
 from collections import namedtuple
+from solitude.common import ContractSourceList
 from solitude.server import RPCTestServer, kill_all_servers  # noqa
-from solitude.client import ETHClient, ContractWrapper, DebugTracer, nonpayable, view  # noqa
+from solitude.client import ETHClient, ContractBase, DebugTracer  # noqa
 from solitude.testing import SOL
 from solitude.cli.debug import InteractiveDebuggerOUI, InteractiveDebuggerCLI
 from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION  # noqa
@@ -25,11 +26,12 @@ def onecmd(debugger, buf, line):
 
 @pytest.fixture(scope="module", autouse=True)
 def contracts(sol: SOL):
-    sol.compiler.add_string(
+    sources = ContractSourceList()
+    sources.add_string(
         "TestContract",
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION))
-    sol.client.update_contracts(sol.compiler.compile())
+    sol.client.update_contracts(sol.compiler.compile(sources))
 
 
 FibResult = namedtuple("FibResult", ["value", "max_depth"])
@@ -190,13 +192,11 @@ def test_0002_interactive(sol: SOL):
     del out
 
 
-class IFibonacci(ContractWrapper):
-    @nonpayable
+class IFibonacci(ContractBase):
     def fib(self, n: int):
         return self.transact_sync("fib", n)
 
     @property
-    @view
     def result(self):
         return self.functions.result().call()
 

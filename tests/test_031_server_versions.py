@@ -1,8 +1,9 @@
 import datetime
 import pytest
-from solitude.compiler import CompiledSources, Compiler
+from solitude.common import ContractSourceList
+from solitude.compiler import Compiler
 from solitude.server import RPCTestServer, kill_all_servers
-from solitude.client import ETHClient, ContractWrapper, view, payable
+from solitude.client import ETHClient, ContractBase
 from solitude.tools import GanacheCli
 from conftest import (  # noqa
     tooldir, tool_solc, SOLIDITY_VERSION)
@@ -38,13 +39,14 @@ def server(tool_ganache):
 def test_0001_pay(server: RPCTestServer, tool_solc):
     CONTRACT_NAME = "TestContract"
 
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
-    compiler.add_string(
+    sources.add_string(
         "test",
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME))
-    compiled = compiler.compile()
+    compiled = compiler.compile(sources)
 
     client = ETHClient(
         endpoint=server.endpoint,
@@ -56,12 +58,10 @@ def test_0001_pay(server: RPCTestServer, tool_solc):
     assert value == 110
 
 
-class MyTestContractWrapper(ContractWrapper):
-    @view
+class MyTestContractWrapper(ContractBase):
     def getTime(self) -> int:
         return self.functions.getTime().call()
 
-    @payable
     def pay(self, value: int, valueSent: int):
         self.transact_sync("pay", value, value=valueSent)
         return self.functions.lastValue().call()

@@ -9,9 +9,10 @@ import time
 import re
 import textwrap
 import pytest
+from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
 from solitude.server import RPCTestServer, kill_all_servers
-from solitude.client import ETHClient, BatchCaller, IContractNoCheck
+from solitude.client import ETHClient, BatchCaller, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
 
@@ -32,8 +33,9 @@ def server(tool_ganache):
 
 @pytest.fixture(scope="function")
 def client(tool_solc, server):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
-    compiler.add_string(
+    sources.add_string(
         "TestContract",
         PRAGMA + textwrap.dedent("""
         contract TestContract {
@@ -58,7 +60,7 @@ def client(tool_solc, server):
             }
         }
         """))
-    compiled = compiler.compile()
+    compiled = compiler.compile(sources)
     return ETHClient(
         endpoint=server.endpoint,
         compiled=compiled)
@@ -69,11 +71,11 @@ def contracts(client):
     c = {}
     with client.account(0):
         c["TestContract"] = client.deploy(
-            "TestContract", args=(), wrapper=IContractNoCheck)
+            "TestContract", args=(), wrapper=ContractBase)
     return c
 
 
-def test_0001_calls(client: ETHClient, contracts: Dict[str, IContractNoCheck]):
+def test_0001_calls(client: ETHClient, contracts: Dict[str, ContractBase]):
     TestContract = contracts["TestContract"]
 
     assert TestContract.functions.a_plus_b().call() == 42 + 1
@@ -88,7 +90,7 @@ def test_0001_calls(client: ETHClient, contracts: Dict[str, IContractNoCheck]):
     assert results[1] == 42 + 10
 
 
-def test_0002_transactions(client: ETHClient, contracts: Dict[str, IContractNoCheck]):
+def test_0002_transactions(client: ETHClient, contracts: Dict[str, ContractBase]):
     TestContract = contracts["TestContract"]
 
     with client.account(0):
@@ -97,23 +99,23 @@ def test_0002_transactions(client: ETHClient, contracts: Dict[str, IContractNoCh
 
 
 def event_is(event, contract_name, name, args):
-    if event.contract_name != contract_name:
+    if event.contractname != contract_name:
         return False
     if event.name != name:
         return False
     return tuple(event.args) == tuple(args)
 
 
-def test_0003_events(client: ETHClient, contracts: Dict[str, IContractNoCheck]):
+def test_0003_events(client: ETHClient, contracts: Dict[str, ContractBase]):
     TestContract = contracts["TestContract"]
 
-    with client.account(0), client.capture("TestContract.Change"):
+    with client.account(0), client.capture("*:TestContract.Change"):
         TestContract.transact_sync("set_b", 50)
     events = client.get_events()
     assert len(events) == 1
     assert event_is(events[0], "TestContract", "Change", (1, 50))
 
-    with client.account(0), client.capture(re.compile(r"TestContract\..*")):
+    with client.account(0), client.capture(re.compile(r".*:TestContract\..*")):
         TestContract.transact_sync("set_b", 40)
     events = client.get_events()
     assert len(events) == 1
@@ -121,7 +123,7 @@ def test_0003_events(client: ETHClient, contracts: Dict[str, IContractNoCheck]):
 
     flt = client.add_filter([TestContract], ["Change"])
 
-    with client.account(0), client.capture("TestContract.*"):
+    with client.account(0), client.capture("*:TestContract.*"):
         TestContract.transact_sync("set_b", 30)
     events = client.get_events()
     assert len(events) == 1

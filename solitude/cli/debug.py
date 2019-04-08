@@ -358,11 +358,11 @@ class InteractiveDebuggerOUI(ObjectUI):
             step, strip=False,
             before=before if before is not None else self._code_lines[0],
             after=after if after is not None else self._code_lines[1])
-        absolute_path = step.code.path
+        absolute_path = step.code.unitname
         if (absolute_path is not None) and not absolute_path.startswith("source#"):
             absolute_path = os.path.abspath(absolute_path)
         return {
-            "path": step.code.path,
+            "path": step.code.unitname,
             "absolute_path": absolute_path,
             "line_index": step.code.line_index,
             "line_pos": step.code.line_pos,
@@ -384,17 +384,17 @@ class InteractiveDebuggerOUI(ObjectUI):
                     return
                 names = [
                     function_name,
-                    s.step.contract_name + "." + function_name]
+                    s.step.contractname + "." + function_name]
                 for name in names:
                     if name in self._breakpoints:
                         raise CmdException("breakpoint")
 
-        if s.step.code.path is not None:
+        if s.step.code.unitname is not None:
             if (
                     (not prev.valid) or (
-                        (s.step.code.path, s.step.code.line_index) !=
-                        (prev.step.code.path, prev.step.code.line_index))):
-                file_bp_name = "%s:%d" % (os.path.split(s.step.code.path)[-1], 1 + s.step.code.line_index)
+                        (s.step.code.unitname, s.step.code.line_index) !=
+                        (prev.step.code.unitname, prev.step.code.line_index))):
+                file_bp_name = "%s:%d" % (os.path.split(s.step.code.unitname)[-1], 1 + s.step.code.line_index)
                 if file_bp_name in self._breakpoints:
                     raise CmdException("breakpoint")
 
@@ -656,7 +656,7 @@ def main_trace(args):
             s.step.jumptype,
             s.step.op,
             s.step.gas,
-            "%s:%d" % (str(s.step.code.path).split(os.path.sep)[-1], s.step.code.line_index),
+            "%s:%d" % (str(s.step.code.unitname).split(os.path.sep)[-1], s.step.code.line_index),
             line])
 
         if args.variables:

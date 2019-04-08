@@ -10,6 +10,9 @@ import time
 import warnings
 import itertools
 from collections import namedtuple
+from solitude._internal import RaiseForParam, type_assert, value_assert
+
+# import web3 and suppress the warnings it generates
 with warnings.catch_warnings():  # noqa
     warnings.simplefilter("ignore")  # noqa
     from web3 import Web3
@@ -17,11 +20,11 @@ with warnings.catch_warnings():  # noqa
     import web3.contract
 
 from solitude.errors import AccountError, SetupError
+from solitude.common import (
+    ContractObjectList, TransactionInfo, hex_repr, Dump)
+
 from solitude.client.rpc_client import RPCClient
-from solitude.client.contract_wrapper import ContractWrapper
-from solitude.compiler.compiler import CompiledSources
-from solitude.common import TransactionInfo, bhex
-from solitude.common.dump import Dump
+from solitude.client.contract import ContractBase
 
 
 class EventCaptureContext:
@@ -37,6 +40,7 @@ class EventCaptureContext:
 
     def _check_filters(self, text: str):
         for flt in self._event_filter_stack:
+            print("FLT %s %s" % (repr(flt), repr(text)))
             if isinstance(flt, str):
                 if fnmatch.fnmatch(text, flt):
                     return True
@@ -90,21 +94,20 @@ class EventCaptureWithStatement:
         self._ctx._pop_filter()
 
 
-EventAbi = namedtuple("EventAbi", ["contract_name", "name", "signature", "abi"])
-EventLog = namedtuple("EventLog", ["contract_name", "name", "address", "args", "data"])
-Filter = namedtuple("Filter", ["index", "contract_name", "event_names", "valid"])
+EventAbi = namedtuple("EventAbi", ["unitname", "contractname", "name", "signature", "abi"])
+EventLog = namedtuple("EventLog", ["contractname", "name", "address", "args", "data"])
+Filter = namedtuple("Filter", ["index", "unitname", "contractname", "event_names", "valid"])
 
-ZERO_ADDRESS = "0x%040x" % 0
+ZERO_ADDRESS = hex_repr(b"", pad=20, prefix=True)
 
 
 class ETHClient(AccountContext, EventCaptureContext):
-    def __init__(self, endpoint: str, compiled: CompiledSources, dump: Dump=None):
+    def __init__(self, endpoint: str, compiled: ContractObjectList, dump: Dump=None):
         super().__init__()
         self._endpoint = endpoint
         self._web3 = Web3(Web3.HTTPProvider(self._endpoint))
         self._rpc = RPCClient(endpoint=endpoint)
-        self._compiled = CompiledSources()
-        self._compiled_contracts = {}  # type: Dict[str, dict]
+        self._compiled = ContractObjectList()
         self._dump = dump  # type: Dump
         if self._dump is None:
             self._dump = Dump(fileobj=None)
@@ -112,8 +115,8 @@ class ETHClient(AccountContext, EventCaptureContext):
         self._default_gas = 1000000
 
         # accounts
-        self._accounts = list(self._web3.eth.accounts)
         self._account_aliases = {}  # type: Dict[str, int]
+        self._reload_accounts()
         self._initial_default_account = self._web3.eth.defaultAccount
 
         # collect contracts and events
@@ -123,26 +126,29 @@ class ETHClient(AccountContext, EventCaptureContext):
         self._filters = []  # type: List[Filter]
         self.update_contracts(compiled)
 
-    def update_contracts(self, compiled: CompiledSources):
+    def update_contracts(self, compiled: ContractObjectList):
         self._compiled.update(compiled)
-        events = []
-        for contract_name, contract in compiled.contracts.items():
-            self._compiled_contracts[contract_name] = contract
+        self._update_events_index(compiled)
+
+    def _update_events_index(self, compiled: ContractObjectList):
+        for (unitname, contractname), contract in compiled.contracts.items():
             for abi in contract['abi']:
                 if abi.get("type") == "event":
                     event_selector = "{name}({params})".format(
                         name=abi["name"],
                         params=",".join([inp["type"] for inp in abi["inputs"]]))
-                    events.append(EventAbi(
-                        contract_name,
+                    event = EventAbi(
+                        unitname,
+                        contractname,
                         name=abi["name"],
                         signature=bytes(self._web3.sha3(text=event_selector)),
-                        abi=abi))
-        # create map of (contract_name, event_signature) -> eventAbi
-        for event in events:
-            self._events.append(event)
-            key = (event.contract_name, event.signature)
-            self._event_map[key] = event
+                        abi=abi)
+                    self._events.append(event)
+                    key = (event.unitname, event.contractname, event.signature)
+                    self._event_map[key] = event
+
+    def _reload_accounts(self):
+        self._accounts = list(self._web3.eth.accounts)
 
     def set_default_gas(self, gas: int):
         self._default_gas = gas
@@ -153,7 +159,7 @@ class ETHClient(AccountContext, EventCaptureContext):
         self._account_aliases[name] = account_num
 
     def get_accounts(self):
-        return [account for account in self._accounts]
+        return self._accounts[:]
 
     @property
     def rpc(self):
@@ -198,7 +204,7 @@ class ETHClient(AccountContext, EventCaptureContext):
     def _on_transaction(self, info: TransactionInfo):
         # reporting
         self._dump("{contract}[{address}]".format(
-            contract=info.contract,
+            contract=info.contractname,
             address=info.address))
         with self._dump.push("    "):
             self._dump("Call: {function}({fnargs}), {txargs}".format(
@@ -213,11 +219,12 @@ class ETHClient(AccountContext, EventCaptureContext):
         # read events
         for log in info.receipt.logs:
             try:
-                key = (info.contract, bytes(log.topics[0]))
+                event_signature = bytes(log.topics[0])
+                key = (info.unitname, info.contractname, event_signature)
                 event = self._event_map[key]
             except KeyError:
                 continue
-            match_friendly_name = event.contract_name + "." + event.name
+            match_friendly_name = event.unitname + ":" + event.contractname + "." + event.name
             if self._check_filters(match_friendly_name):
                 decoded_log = self.decode_event_log(event, log)
                 self._event_logs.append(decoded_log)
@@ -228,7 +235,7 @@ class ETHClient(AccountContext, EventCaptureContext):
         for inp in event.abi["inputs"]:
             args.append(data["args"][inp["name"]])
         return EventLog(
-            contract_name=event.contract_name,
+            contractname=event.contractname,
             name=event.name,
             address=log["address"],
             args=args,
@@ -276,15 +283,18 @@ class ETHClient(AccountContext, EventCaptureContext):
         account = self._get_account()
         return self.address(account)
 
-    def deploy(self, contract_name: str, args=(), wrapper=ContractWrapper):
+    def deploy(self, contract_selector: str, args=(), wrapper=ContractBase):
         """Deploy a contract
-        :param contract_name: the contract name
+
+        :param contractname: the contract name
         :param args: constructor arguments
         :param account: deployer account, default is account 0
-        :param wrapper: wrapper class for contract (see ContractWrapper)
+        :param wrapper: wrapper class for contract (see ContractBase)
         """
         account = self.get_current_account()
-        compiled_contract = self._compiled_contracts[contract_name]
+        compiled_contract = self._compiled.select(contract_selector)
+        unitname = compiled_contract["_solitude"]["unitName"]
+        contractname = compiled_contract["_solitude"]["contractName"]
         contract = self._web3.eth.contract(
             abi=compiled_contract['abi'],
             bytecode=compiled_contract['bin'])
@@ -298,17 +308,20 @@ class ETHClient(AccountContext, EventCaptureContext):
         deployed_contract = self._web3.eth.contract(
             address=receipt.contractAddress,
             abi=compiled_contract['abi'])
-        return wrapper(self, contract_name, deployed_contract)
+        return wrapper(self, unitname, contractname, deployed_contract)
 
-    def use(self, contract_name: str, address: str, wrapper=ContractWrapper):
-        compiled_contract = self._compiled_contracts[contract_name]
+    def use(self, contract_selector: str, address: str, wrapper=ContractBase):
+        compiled_contract = self._compiled.select(contract_selector)
+        unitname = compiled_contract["_solitude"]["unitName"]
+        contractname = compiled_contract["_solitude"]["contractName"]
         deployed_contract = self._web3.eth.contract(
             address=address,
             abi=compiled_contract['abi'])
-        return wrapper(self, contract_name, deployed_contract)
+        return wrapper(self, unitname, contractname, deployed_contract)
 
-    def add_filter(self, contracts: List[ContractWrapper], event_names: List[str], parameters=None) -> Filter:
-        contract_name = None
+    def add_filter(self, contracts: List[ContractBase], event_names: List[str], parameters=None) -> Filter:
+        unitname = None
+        contractname = None
         param_address = []
 
         def single_or_list(lst):
@@ -317,14 +330,15 @@ class ETHClient(AccountContext, EventCaptureContext):
             return lst
 
         for contract in contracts:
-            if contract_name is not None and contract.name != contract_name:
+            if contractname is not None and (contract.name != contractname or contract.unitname != unitname):
                 raise SetupError("All contract instances must refer to the same contract")
-            contract_name = contract.name
+            contractname = contract.name
+            unitname = contract.unitname
             param_address.append(contract.address)
         param_events = []
         for event in self._events:
-            if event.contract_name == contract_name and event.name in event_names:
-                param_events.append(bhex(event.signature))
+            if event.contractname == contractname and event.unitname == unitname and event.name in event_names:
+                param_events.append(hex_repr(event.signature, prefix=True))
         param_topics = [single_or_list(param_events)]
         if parameters is not None:
             param_topics += parameters
@@ -338,7 +352,8 @@ class ETHClient(AccountContext, EventCaptureContext):
         assert result.startswith("0x")
         flt = Filter(
             index=int(result[2:], 16),
-            contract_name=contract_name,
+            unitname=unitname,
+            contractname=contractname,
             event_names=event_names,
             valid=[True])
         self._filters.append(flt)
@@ -362,7 +377,7 @@ class ETHClient(AccountContext, EventCaptureContext):
                     continue
                 logs = self._web3.eth.getFilterChanges(hex(flt.index))
                 for log in logs:
-                    key = (flt.contract_name, log["topics"][0])
+                    key = (flt.unitname, flt.contractname, bytes(log["topics"][0]))
                     event = self._event_map[key]
                     decoded_log = self.decode_event_log(event, log)
                     yield decoded_log
@@ -380,7 +395,7 @@ class BatchCaller:
         self._data = []  # type: List[tuple]
         self._calls = []  # type: List[tuple]
 
-    def add_call(self, contract: ContractWrapper, func: str, args=()):
+    def add_call(self, contract: ContractBase, func: str, args=()):
         contract_function = getattr(contract._contract.functions, func)(*args)
         self._data.append(("eth_call", [contract_function.buildTransaction()]))
         self._calls.append((contract, contract_function))

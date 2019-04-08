@@ -10,7 +10,8 @@ from solitude.errors import SetupError
 from solitude.tools import (  # noqa
     Tool, GanacheCli, Solc, Solium)
 from solitude.client import ETHClient
-from solitude.compiler import Compiler, CompiledSources, Linter
+from solitude.common import ContractObjectList
+from solitude.compiler import Compiler, Linter
 from solitude.server import RPCTestServer
 from solitude.common.dump import Dump, unique_dumpname
 
@@ -80,11 +81,10 @@ class Factory:
         """
         if endpoint is None:
             endpoint = self._cfg["Client.Endpoint"]
-        compiled = CompiledSources()
+        compiled = ContractObjectList()
         contract_build_dir = parse_path(self._cfg["Client.ContractBuildDir"])
         if contract_build_dir is not None:
-            compiled.add_directory(
-                contract_build_dir)
+            compiled.add_directory(contract_build_dir)
         dump = None
         if self._cfg["Client.EnableGasLog"]:
             dump_filename = unique_dumpname(

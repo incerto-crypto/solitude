@@ -4,20 +4,22 @@
 # COPYING file in the root directory of this source tree
 
 import pytest
+from solitude.common import ContractSourceList
 from solitude.server import RPCTestServer, kill_all_servers  # noqa
-from solitude.client import ETHClient, ContractWrapper, view, payable, nonpayable, pure  # noqa
+from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
 from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION  # noqa
 
 
 @pytest.fixture(scope="module", autouse=True)
 def contracts(sol: SOL):
-    sol.compiler.add_string(
+    sources = ContractSourceList()
+    sources.add_string(
         "test",
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME))
-    sol.client.update_contracts(sol.compiler.compile())
+    sol.client.update_contracts(sol.compiler.compile(sources))
 
 
 def test_0001_pay(sol: SOL):
@@ -31,26 +33,21 @@ def test_0001_pay(sol: SOL):
         assert(t > 0)
 
 
-class ITestContract(ContractWrapper):
-    @pure
+class ITestContract(ContractBase):
     def add(self, a, b):
         return self.functions.add(a, b).call()
 
-    @view
     def getTime(self) -> int:
         t = self.functions.getTime().call()
         return self.add(t, 0)
 
-    @payable
     def pay(self, value: int, valueSent: int):
         self.transact_sync("pay", value, value=valueSent)
         return self.functions.lastValue().call()
 
-    @nonpayable
     def reset(self):
         self.transact_sync("reset")
 
-    @payable
     def pay_reset_gettime(self, value: int, valueSent: int):
         self.pay(value, valueSent)
         self.reset()

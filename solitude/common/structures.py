@@ -7,7 +7,8 @@ from collections import namedtuple
 import binascii
 
 TransactionInfo = namedtuple('TransactionInfo', [
-    'contract',
+    'unitname',
+    'contractname',
     'address',
     'function',
     'fnargs',
@@ -28,10 +29,10 @@ def file_message_format(m: FileMessage):
         m.unitname, m.line, m.column, m.type, m.message)
 
 
-def bhex(b: bytes, pad=None, prefix=True):
+def hex_repr(b: bytes, pad=None, prefix=True):
     s = binascii.hexlify(b).decode()
     if pad is not None:
-        s = ("00" * (pad - len(b))) + s
+        s = ("00" * min(0, pad - len(b))) + s
     if prefix:
         s = "0x" + s
     return s

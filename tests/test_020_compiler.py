@@ -5,6 +5,7 @@
 
 import os
 import pytest
+from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
 from solitude.errors import CompilerError
 from conftest import tooldir, tool_solc, SOLIDITY_VERSION  # noqa
@@ -18,22 +19,24 @@ def find_line(text, needle):
 
 
 def test_0001_compile_string(tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContractFromString"
-    SOURCE_NAME = "test"
-    compiler.add_string(
-        SOURCE_NAME,
+    UNIT_NAME = "test"
+    sources.add_string(
+        UNIT_NAME,
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME,
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiled = compiler.compile()
-    assert(compiled.contracts[CONTRACT_NAME]["_solitude"]["contractName"] == CONTRACT_NAME)
+    compiled = compiler.compile(sources)
+    assert(compiled.select(CONTRACT_NAME)["_solitude"]["contractName"] == CONTRACT_NAME)
 
 
 def test_0002_compile_file(tooldir, tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContractFromFile0002"
     contract_file = os.path.join(tooldir, CONTRACT_NAME + ".sol")
@@ -44,12 +47,13 @@ def test_0002_compile_file(tooldir, tool_solc):
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiler.add_files(contract_file)
-    compiled = compiler.compile()
-    assert(compiled.contracts[CONTRACT_NAME]["_solitude"]["contractName"] == CONTRACT_NAME)
+    sources.add_file(contract_file)
+    compiled = compiler.compile(sources)
+    assert(compiled.select(CONTRACT_NAME)["_solitude"]["contractName"] == CONTRACT_NAME)
 
 
 def test_0003_compile_file_and_string(tooldir, tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME_STRING = "TestContractFromString"
     CONTRACT_NAME_FILE = "TestContractFromFile0003"
@@ -62,7 +66,7 @@ def test_0003_compile_file_and_string(tooldir, tool_solc):
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiler.add_string(
+    sources.add_string(
         SOURCE_NAME,
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
@@ -70,20 +74,21 @@ def test_0003_compile_file_and_string(tooldir, tool_solc):
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiler.add_files(contract_file)
-    compiled = compiler.compile()
+    sources.add_file(contract_file)
+    compiled = compiler.compile(sources)
     assert (
-        compiled.contracts[CONTRACT_NAME_STRING]["_solitude"]["contractName"] ==
+        compiled.select(CONTRACT_NAME_STRING)["_solitude"]["contractName"] ==
         CONTRACT_NAME_STRING)
     assert(
-        compiled.contracts[CONTRACT_NAME_FILE]["_solitude"]["contractName"] ==
+        compiled.select(CONTRACT_NAME_FILE)["_solitude"]["contractName"] ==
         CONTRACT_NAME_FILE)
 
 
 def test_0004_compile_duplicate_name(tooldir, tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContract"
-    SOURCE_NAME = "test"
+    UNIT_NAME = "test"
     contract_file = os.path.join(tooldir, CONTRACT_NAME + ".sol")
     with open(contract_file, 'w') as fp:
         fp.write(TEST_CONTRACT.format(
@@ -92,31 +97,31 @@ def test_0004_compile_duplicate_name(tooldir, tool_solc):
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiler.add_string(
-        SOURCE_NAME,
+    sources.add_string(
+        UNIT_NAME,
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
             contract_name=CONTRACT_NAME,
             zero_value_constexpr="0",
             zero_value_literal="0",
             string_literal='"a string"'))
-    compiler.add_files(contract_file)
-    try:
-        compiler.compile()
-    except CompilerError as err:
-        assert len(err.messages) == 1
-        m = err.messages[0]
-        assert m.type == "duplicate"
-        assert m.unitname == CONTRACT_NAME
-    else:
-        pytest.fail("Duplicate contract name not caught by compiler")
+    sources.add_file(contract_file)
+    compiled = compiler.compile(sources)
+    assert (
+        compiled.select(UNIT_NAME + ":" + CONTRACT_NAME)["_solitude"]["contractName"] ==
+        CONTRACT_NAME)
+    suffix = contract_file.split("/")[-1]
+    assert (
+        compiled.select(suffix + ":" + CONTRACT_NAME)["_solitude"]["contractName"] ==
+        CONTRACT_NAME)
 
 
 def test_0005_compile_syntax_error(tool_solc):
+    sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContract"
     SOURCE_NAME = "test"
-    compiler.add_string(
+    sources.add_string(
         SOURCE_NAME,
         TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
@@ -125,7 +130,7 @@ def test_0005_compile_syntax_error(tool_solc):
             zero_value_literal="0",
             string_literal="it's not a string"))
     try:
-        compiler.compile()
+        compiler.compile(sources)
     except CompilerError as err:
         assert len(err.messages) >= 1
         m = err.messages[0]

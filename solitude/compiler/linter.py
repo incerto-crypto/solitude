@@ -5,18 +5,20 @@
 
 from typing import List, Union, Iterator, Tuple  # noqa
 from collections import OrderedDict
-from solitude.compiler.sourcelist import SourceList
+
+from solitude.common import (
+    ContractSourceList, FileMessage)
+
 from solitude.compiler.solium_wrapper import SoliumWrapper
-from solitude.common import FileMessage
 
 
-class Linter(SourceList):
+class Linter:
     def __init__(self, executable: str, plugins: List[str], rules: Union[dict, OrderedDict]):
         super().__init__()
         self._executable = executable
         self._solium = SoliumWrapper(executable, plugins, rules)
 
-    def lint_iter(self) -> Iterator[Tuple[str, FileMessage]]:
+    def lint_iter(self, sourcelist: ContractSourceList) -> Iterator[Tuple[str, FileMessage]]:
         try:
             for path in self._file_sources:
                 yield path, self._solium.lint_file(path)
@@ -26,5 +28,5 @@ class Linter(SourceList):
         finally:
             self._clear_sources()
 
-    def lint(self) -> List[Tuple[str, FileMessage]]:
-        return list(self.lint_iter())
+    def lint(self, sourcelist: ContractSourceList) -> List[Tuple[str, FileMessage]]:
+        return list(self.lint_iter(sourcelist))

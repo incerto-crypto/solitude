@@ -172,7 +172,7 @@ class Debugger:
         varscope = "function"
         if varname is None:
             st, le, fi = [int(x) for x in astnode["src"].split(":")]
-            source = self._dbg.srcmapper.get_source(step.contract_name, st, le, fi)
+            source = self._dbg.srcmapper.get_source(step.contractname, st, le, fi)
             varname = source.source[st:st + le]
             varscope = "line"
         try:
@@ -185,7 +185,7 @@ class Debugger:
         ast_src = "%d:%d:%d" % (step.start, step.length, step.fileno)
         out = {}
         try:
-            for node in self._astmaps[step.code.path][ast_src]:
+            for node in self._astmaps[step.code.unitname][ast_src]:
                 out[node["nodeType"]] = node
         except KeyError:
             pass

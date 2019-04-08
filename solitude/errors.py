@@ -49,8 +49,9 @@ class TransactionError(SolitudeError):
             message: str,
             info: TransactionInfo):
         super().__init__(
-            "Transaction Error in %s.%s. %s. debug with txhash: 0x%s" % (
-                info.contract,
+            "Transaction Error in %s:%s.%s. %s. debug with txhash: 0x%s" % (
+                info.unitname,
+                info.contractname,
                 info.function,
                 message,
                 binascii.hexlify(info.txhash).decode()))

@@ -6,10 +6,8 @@
 from solitude.testing.context import SOL, SOL_new
 from solitude.testing.fixtures import sol
 from solitude.errors import TransactionError
-from solitude.client.eth_client import ETHClient
-from solitude.server.rpc_server import RPCTestServer
-from solitude.client.contract_wrapper import (
-    ContractWrapper, IContractNoCheck, pure, view, payable, nonpayable)
+from solitude.client import ContractBase, ETHClient
+from solitude.server import RPCTestServer
 
 
 __all__ = [
@@ -19,7 +17,5 @@ __all__ = [
     "TransactionError",
     "ETHClient",
     "RPCTestServer",
-    "ContractWrapper",
-    "IContractNoCheck",
-    "pure", "view", "payable", "nonpayable"
+    "ContractBase"
 ]

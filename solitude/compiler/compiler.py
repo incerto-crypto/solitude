@@ -8,87 +8,47 @@ import os
 import copy
 import json
 from io import StringIO
-from solitude.compiler.sourcelist import SourceList
-from solitude.compiler.solc_wrapper import SolcWrapper as Solc
-from solitude.errors import CompilerError, FileMessage
+
+from solitude.common import (
+    ContractSourceList, ContractObjectList, FileMessage)
+from solitude.errors import CompilerError
+
+from solitude.compiler.solc_wrapper import SolcWrapper as SolcWrapper
 
 
-class CompiledSources:
-    def __init__(self):
-        self._contracts = {}
-
-    def add_contract(self, contract_name: str, compiled_contract: dict):
-        if contract_name in self._contracts:
-            raise CompilerError([FileMessage(
-                type="duplicate",
-                unitname=contract_name,
-                line=None,
-                column=None,
-                message="Duplicate contract name found")])
-        self._contracts[contract_name] = compiled_contract
-
-    def add_directory(self, path: str):
-        for filename in os.listdir(path):
-            if os.path.splitext(filename)[1].lower() in (".json"):
-                with open(os.path.join(path, filename)) as fp:
-                    contract = json.load(fp)
-                    self.add_contract(
-                        contract["_solitude"]["contractName"],
-                        contract)
-
-    def save_directory(self, path: str):
-        os.makedirs(path, exist_ok=True)
-        for contract_name, contract in self._contracts.items():
-            with open(os.path.join(path, contract_name + ".json"), "w") as fp:
-                json.dump(contract, fp, indent=2)
-
-    def update(self, other: "CompiledSources"):
-        for contract_name, contract in other._contracts.items():
-            self.add_contract(contract_name, contract)
-
-    @property
-    def contracts(self):
-        return copy.copy(self._contracts)
-
-
-class Compiler(SourceList):
-    Out = Solc.Out
+class Compiler:
+    Out = SolcWrapper.Out
 
     OUTPUT_VALUES = [
-        Solc.Out.AST,
-        Solc.Out.ABI,
-        Solc.Out.DEPLOY_OBJECT,
-        # Solc.Out.DEPLOY_OPCODES,
-        Solc.Out.DEPLOY_SOURCEMAP,
-        # Solc.Out.DEPLOY_LINKREFS,
-        Solc.Out.RUNTIME_OBJECT,
-        # Solc.Out.RUNTIME_OPCODES,
-        Solc.Out.RUNTIME_SOURCEMAP,
-        # Solc.Out.RUNTIME_LINKREFS,
+        SolcWrapper.Out.AST,
+        SolcWrapper.Out.ABI,
+        SolcWrapper.Out.DEPLOY_OBJECT,
+        # SolcWrapper.Out.DEPLOY_OPCODES,
+        SolcWrapper.Out.DEPLOY_SOURCEMAP,
+        # SolcWrapper.Out.DEPLOY_LINKREFS,
+        SolcWrapper.Out.RUNTIME_OBJECT,
+        # SolcWrapper.Out.RUNTIME_OPCODES,
+        SolcWrapper.Out.RUNTIME_SOURCEMAP,
+        # SolcWrapper.Out.RUNTIME_LINKREFS,
     ]
 
     def __init__(self, executable: str, optimize: Optional[int]=None):
         super().__init__()
         self._executable = executable
-        self._solc = Solc(
+        self._solc = SolcWrapper(
             executable=executable,
             outputs=Compiler.OUTPUT_VALUES,
             optimize=optimize,
-            warnings_as_errors=False)
+            warnings_as_errors=False)  # TODO expose this option
 
-    def compile(self) -> CompiledSources:
+    def compile(self, sourcelist: ContractSourceList) -> ContractObjectList:
         """Compile all contracts
         """
-        try:
-            compiled = CompiledSources()
-            text_sources = {}
-            for source_name, source in self._text_sources:
-                text_sources[source_name] = source
+        output_dict = self._solc.compile(
+            source_files=sourcelist.file_sources,
+            source_strings=sourcelist.text_sources)
 
-            output_dict = self._solc.compile(source_files=self._file_sources, source_strings=text_sources)
-
-            for (source_path, contract_name), contract in output_dict.items():
-                compiled.add_contract(contract_name, contract)
-            return compiled
-        finally:
-            self._clear_sources()
+        compiled = ContractObjectList()
+        for (unitname, contractname), data in output_dict.items():
+            compiled.add_contract(unitname, contractname, data)
+        return compiled

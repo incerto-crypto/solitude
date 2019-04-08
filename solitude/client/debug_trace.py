@@ -9,16 +9,16 @@ import hashlib
 import binascii
 import bisect
 from solitude.client import RPCClient
-from solitude.compiler import CompiledSources
+from solitude.common import ContractObjectList, hex_repr
 
 
-TraceStackItem = namedtuple("TraceStackItem", ["contract_name", "decoder"])
+TraceStackItem = namedtuple("TraceStackItem", ["unitname", "contractname", "decoder"])
 
 SourceMapping = namedtuple("SourceMapping", [
-    "path", "source", "lines", "line_index", "line_start", "line_pos"])
+    "unitname", "source", "lines", "line_index", "line_start", "line_pos"])
 
 TraceStep = namedtuple("TraceStep", [
-    "index", "depth", "contract_name",
+    "index", "depth", "contractname",
     "pc", "op", "stack", "memory", "storage", "gas", "error",
     "start", "length", "fileno", "jumptype",
     "code"])
@@ -28,19 +28,15 @@ CallStackEvent = namedtuple("CallStackEvent", ["event", "data"])
 
 
 class DebugTracer:
-    def __init__(self, rpc: RPCClient, compiled: CompiledSources):
+    def __init__(self, rpc: RPCClient, compiled: ContractObjectList):
         self._rpc = rpc
-        self._contracts = {}  # type: Dict[str, dict]
-        for contract_name, contract in compiled.contracts.items():
-            self._contracts[contract_name] = contract
+        self._compiled = compiled
         self._address_to_contract = AddressToContract()
-        self._address_to_contract.initialize(
-            rpc,
-            [(name, binascii.unhexlify(c["bin"])) for name, c in self._contracts.items()])
-        self.srcmapper = SourceMapper(self._contracts)
+        self._address_to_contract.initialize(rpc, self._compiled)
+        self.srcmapper = SourceMapper(self._compiled)
 
     def trace_iter(self, txhash: bytes) -> Iterator[Tuple[TraceStep, List[TraceStep]]]:
-        txhash_hex = "0x" + binascii.hexlify(txhash).decode()
+        txhash_hex = hex_repr(txhash)
         transaction = self._rpc.eth_getTransactionByHash(txhash_hex)
         debug_trace = self._rpc.debug_traceTransaction(txhash_hex, {})
         logs = debug_trace["structLogs"]
@@ -61,14 +57,16 @@ class DebugTracer:
                     # contract address is in element -2 of stack
                     address = "0x" + logs[i - 1]["stack"][-2][24:]
                 try:
-                    call_contract_name = self._address_to_contract.get_contract_id(address)
-                    contract = self._contracts[call_contract_name]
+                    call_unitname, call_contractname = self._address_to_contract.get_contract_id(address)
+                    contract = self._compiled.contracts[(call_unitname, call_contractname)]
                     tracestack.append(TraceStackItem(
-                        contract_name=call_contract_name,
+                        unitname=call_unitname,
+                        contractname=call_contractname,
                         decoder=FrameDecoder(contract=contract)))
                 except KeyError:
                     tracestack.append(TraceStackItem(
-                        contract_name=call_contract_name,
+                        unitname=call_unitname,
+                        contractname=call_contractname,
                         decoder=FrameDecoderDummy()))
             elif depth == prev_depth - 1:
                 del tracestack[-1]
@@ -78,10 +76,10 @@ class DebugTracer:
             frame = tracestack[-1]
             mapping = frame.decoder.get_mapping(address=pc)
             st, le, fi, ju = mapping
-            source = self.srcmapper.get_source(frame.contract_name, st, le, fi)
+            source = self.srcmapper.get_source(frame.unitname, st, le, fi)
 
             step = TraceStep(
-                index=i, depth=depth, contract_name=frame.contract_name,
+                index=i, depth=depth, contractname=frame.contractname,
                 pc=pc, op=op, stack=stack, memory=memory, storage=storage, gas=gas, error=error,
                 start=st, length=le, fileno=fi, jumptype=ju,
                 code=source)
@@ -241,35 +239,36 @@ class SourcePosToLine:
 
 
 class SourceMapper:
-    def __init__(self, contracts: Dict[str, dict]):
-        self._contracts = contracts
+    def __init__(self, compiled: ContractObjectList):
+        self._compiled = compiled
         # collect sources
-        self._sourcepath_to_posmapper = {}  # type: Dict[str, SourcePosToLine]
-        self._contractname_fi_to_sourcepath = {}  # type: Dict[Tuple[str, int], str]
-        for contract_name, contract in self._contracts.items():
-            self._sourcepath_to_posmapper[contract["_solitude"]["sourcePath"]] = (
+        self._unitname_to_posmapper = {}  # type: Dict[str, SourcePosToLine]
+        self._unitname_fi_to_unitname = {}  # type: Dict[Tuple[str, int], str]
+        # self._contractname_fi_to_unitname = {}  # type: Dict[Tuple[str, int], str]
+        for (unitname, contractname), contract in self._compiled.contracts.items():
+            self._unitname_to_posmapper[unitname] = (
                 SourcePosToLine(contract["_solitude"]["source"]))
-            for fi, source_path in enumerate(contract["_solitude"]["sourceList"]):
-                self._contractname_fi_to_sourcepath[(contract_name, fi)] = source_path
+            for fi, fi_unitname in enumerate(contract["_solitude"]["sourceList"]):
+                self._unitname_fi_to_unitname[(unitname, fi)] = fi_unitname
         self._nullposmapper = SourcePosToLine(None)
 
-    def get_path(self, contract_name: str, fi: int) -> str:
-        return self._contractname_fi_to_sourcepath[(contract_name, fi)]
+    def get_unitname(self, unitname: str, fi: int) -> str:
+        return self._unitname_fi_to_unitname[(unitname, fi)]
 
-    def get_source(self, contract_name: str, st: int, le: int, fi: int) -> SourceMapping:
-        source_path = None  # type: Optional[str]
+    def get_source(self, unitname: str, st: int, le: int, fi: int) -> SourceMapping:
+        unitname_fi = None  # type: Optional[str]
         try:
-            source_path = self.get_path(contract_name, fi)
-            posmapper = self._sourcepath_to_posmapper[source_path]
+            unitname_fi = self.get_unitname(unitname, fi)
+            posmapper = self._unitname_to_posmapper[unitname_fi]
         except KeyError:
-            source_path = None
+            unitname_fi = None
             posmapper = self._nullposmapper
         line_index, line_start = posmapper.line_of(st)
         line_pos = st - line_start
         if line_pos < 0:
             line_pos = len(posmapper.lines[line_index])
         return SourceMapping(
-            path=source_path,
+            unitname=unitname_fi,
             source=posmapper.source,
             lines=posmapper.lines,
             line_index=line_index,
@@ -279,13 +278,23 @@ class SourceMapper:
 
 class AddressToContract:
     def __init__(self):
-        self._address_to_contract_id = {}  # type: Dict[str, str]
+        self._address_to_contract_id = {}  # type: Dict[str, Tuple[str, str]]
 
-    def initialize(self, client: RPCClient, contracts: List[Tuple[str, bytes]]):
+    def initialize(self, client: RPCClient, compiled: ContractObjectList):
         earliest_block = client.eth_getBlockByNumber("earliest", False)
         start_block = int(earliest_block["number"][2:], 16)
         latest_block = client.eth_getBlockByNumber("latest", False)
         end_block = int(latest_block["number"][2:], 16)
+
+        contracts_bin = [
+            (
+                unitname,
+                contractname,
+                binascii.unhexlify(contract["bin"])
+            ) for (
+                (unitname, contractname), contract) in compiled.contracts.items()
+        ]
+
         for block_number in range(start_block, end_block + 1):
             block = client.eth_getBlockByNumber(hex(block_number), True)
             for transaction in block["transactions"]:
@@ -294,19 +303,20 @@ class AddressToContract:
                     contract_address = receipt["contractAddress"]
                     if contract_address is not None:
                         contract_bytecode = binascii.unhexlify(transaction["input"][2:])
-                        contract_id = self._search_contract(contracts, contract_bytecode)
+
+                        contract_id = self._search_contract(contracts_bin, contract_bytecode)
                         # print("ContractAddress: %s" % contract_address)
                         # print("ContractID: %s" % repr(contract_id))
                         self._address_to_contract_id[contract_address] = contract_id
 
-    def _search_contract(self, contracts: List[Tuple[str, bytes]], contract_bytecode: bytes):
+    def _search_contract(self, contract_bin: Tuple[str, str, bytes], contract_bytecode: bytes) -> Tuple[str, str]:
         match_length = 0
-        match_name = None
-        for name, bytecode in contracts:
+        match_id = None
+        for unitname, contractname, bytecode in contract_bin:
             if len(bytecode) > match_length and contract_bytecode.startswith(bytecode):
                 match_length = len(bytecode)
-                match_name = name
-        return match_name
+                match_id = (unitname, contractname)
+        return match_id
 
-    def get_contract_id(self, address: str):
+    def get_contract_id(self, address: str) -> Tuple[str, str]:
         return self._address_to_contract_id[address]
