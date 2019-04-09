@@ -65,9 +65,9 @@ def read_yaml_or_json_file(path: str):
         raise SetupError("Configuration file must be either .yaml or .json")
     with open(path, 'r') as fp:
         if path.endswith(".json"):
-            cfg_from_file = json.load(fp, object_pairs_hook=OrderedDict)
+            return json.load(fp, object_pairs_hook=OrderedDict)
         else:
-            cfg_from_file = yaml_ordered_load(fp)
+            return yaml_ordered_load(fp)
 
 
 def read_config_file(path: str):
