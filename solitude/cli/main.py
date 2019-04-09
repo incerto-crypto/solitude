@@ -207,7 +207,7 @@ def main():
         parser.print_help()
         exit(1)
     try:
-        if args._global_config is not None:
+        if args.global_config is not None:
             _update_global_config_from_file(args.global_config)
         args.func(args)
     except CLIError as e:
