@@ -6,8 +6,8 @@
 """Compiler
 
 This module provides tools for compiling and linting smartcontract and manages
-the source code and the compiled files. 
-
+the source code and compiled files.
+ 
 """
 
 from solitude.compiler.compiler import Compiler, CompiledSources
