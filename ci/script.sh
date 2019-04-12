@@ -9,7 +9,7 @@ if [ "$TRAVIS_BRANCH" == "feature/ci-cd" ]; then
     git commit -m $TRAVIS_COMMIT
     git branch temp-branch
     git checkout gh-pages
-    git merge gh-pages
+    git merge temp-branch
     git push origin gh-pages
 fi
 
