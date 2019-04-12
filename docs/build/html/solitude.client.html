@@ -1,0 +1,843 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>solitude.client &mdash; solitude 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="solitude.compiler" href="solitude.compiler.html" />
+    <link rel="prev" title="solitude" href="solitude.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> solitude
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="solitude.html">solitude</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">solitude.client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solitude.compiler.html">solitude.compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solitude.testing.html">solitude.testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solitude.tools.html">solitude.tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solitude.server.html">solitude.server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">solitude</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>solitude.client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-solitude.client">
+<span id="solitude-client"></span><h1>solitude.client<a class="headerlink" href="#module-solitude.client" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="solitude.client.ETHClient">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">ETHClient</code><span class="sig-paren">(</span><em>endpoint: str</em>, <em>compiled: solitude.compiler.compiler.CompiledSources</em>, <em>dump: solitude.common.dump.Dump = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">solitude.client.eth_client.AccountContext</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">solitude.client.eth_client.EventCaptureContext</span></code></p>
+<dl class="method">
+<dt id="solitude.client.ETHClient.account">
+<code class="descname">account</code><span class="sig-paren">(</span><em>name: Union[str, int]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.account" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.add_filter">
+<code class="descname">add_filter</code><span class="sig-paren">(</span><em>contracts: List[solitude.client.contract_wrapper.ContractWrapper], event_names: List[str], parameters=None</em><span class="sig-paren">)</span> &#x2192; solitude.client.eth_client.Filter<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.add_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.add_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.address">
+<code class="descname">address</code><span class="sig-paren">(</span><em>name: Union[str, int]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.capture">
+<code class="descname">capture</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.capture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.capture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.clear_events">
+<code class="descname">clear_events</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.clear_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.clear_events" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ETHClient.compiled">
+<code class="descname">compiled</code><a class="headerlink" href="#solitude.client.ETHClient.compiled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.decode_event_log">
+<code class="descname">decode_event_log</code><span class="sig-paren">(</span><em>event: solitude.client.eth_client.EventAbi</em>, <em>log</em><span class="sig-paren">)</span> &#x2192; solitude.client.eth_client.EventLog<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.decode_event_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.decode_event_log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.deploy">
+<code class="descname">deploy</code><span class="sig-paren">(</span><em>contract_name: str</em>, <em>args=()</em>, <em>wrapper=&lt;class 'solitude.client.contract_wrapper.ContractWrapper'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.deploy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.deploy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deploy a contract
+:param contract_name: the contract name
+:param args: constructor arguments
+:param account: deployer account, default is account 0
+:param wrapper: wrapper class for contract (see ContractWrapper)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.get_accounts">
+<code class="descname">get_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.get_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.get_accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.get_current_account">
+<code class="descname">get_current_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.get_current_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.get_current_account" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.get_events">
+<code class="descname">get_events</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[solitude.client.eth_client.EventLog]<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.get_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.get_events" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.get_last_blocktime">
+<code class="descname">get_last_blocktime</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.get_last_blocktime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.get_last_blocktime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get timestamp of last mined block
+:return: last block’s timestamp (in seconds)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.increase_blocktime_offset">
+<code class="descname">increase_blocktime_offset</code><span class="sig-paren">(</span><em>seconds: int</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.increase_blocktime_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.increase_blocktime_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increase the offset to apply to block.timestamp for newly mined blocks</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seconds</strong> – number of seconds to add to block.timestamp offset (in seconds)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">new block.timestamp offset (in seconds)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.iter_filters">
+<code class="descname">iter_filters</code><span class="sig-paren">(</span><em>filters: List[solitude.client.eth_client.Filter], interval=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.iter_filters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.iter_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.mine_block">
+<code class="descname">mine_block</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.mine_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.mine_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mine a new block with no transactions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.remove_filter">
+<code class="descname">remove_filter</code><span class="sig-paren">(</span><em>flt: solitude.client.eth_client.Filter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.remove_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.remove_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ETHClient.rpc">
+<code class="descname">rpc</code><a class="headerlink" href="#solitude.client.ETHClient.rpc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.set_account_alias">
+<code class="descname">set_account_alias</code><span class="sig-paren">(</span><em>name: str</em>, <em>account_num: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.set_account_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.set_account_alias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.set_default_gas">
+<code class="descname">set_default_gas</code><span class="sig-paren">(</span><em>gas: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.set_default_gas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.set_default_gas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.update_contracts">
+<code class="descname">update_contracts</code><span class="sig-paren">(</span><em>compiled: solitude.compiler.compiler.CompiledSources</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.update_contracts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.update_contracts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ETHClient.use">
+<code class="descname">use</code><span class="sig-paren">(</span><em>contract_name: str</em>, <em>address: str</em>, <em>wrapper=&lt;class 'solitude.client.contract_wrapper.ContractWrapper'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#ETHClient.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ETHClient.use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ETHClient.web3">
+<code class="descname">web3</code><a class="headerlink" href="#solitude.client.ETHClient.web3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.BatchCaller">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">BatchCaller</code><span class="sig-paren">(</span><em>client: solitude.client.eth_client.ETHClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#BatchCaller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.BatchCaller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="solitude.client.BatchCaller.add_call">
+<code class="descname">add_call</code><span class="sig-paren">(</span><em>contract: solitude.client.contract_wrapper.ContractWrapper</em>, <em>func: str</em>, <em>args=()</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/eth_client.html#BatchCaller.add_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.BatchCaller.add_call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.BatchCaller.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="_modules/solitude/client/eth_client.html#BatchCaller.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.BatchCaller.execute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Filter">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Filter</code><span class="sig-paren">(</span><em>index</em>, <em>contract_name</em>, <em>event_names</em>, <em>valid</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.Filter.contract_name">
+<code class="descname">contract_name</code><a class="headerlink" href="#solitude.client.Filter.contract_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.Filter.event_names">
+<code class="descname">event_names</code><a class="headerlink" href="#solitude.client.Filter.event_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.Filter.index">
+<code class="descname">index</code><a class="headerlink" href="#solitude.client.Filter.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.Filter.valid">
+<code class="descname">valid</code><a class="headerlink" href="#solitude.client.Filter.valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.EventLog">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">EventLog</code><span class="sig-paren">(</span><em>contract_name</em>, <em>name</em>, <em>address</em>, <em>args</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.EventLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.EventLog.address">
+<code class="descname">address</code><a class="headerlink" href="#solitude.client.EventLog.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.EventLog.args">
+<code class="descname">args</code><a class="headerlink" href="#solitude.client.EventLog.args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.EventLog.contract_name">
+<code class="descname">contract_name</code><a class="headerlink" href="#solitude.client.EventLog.contract_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.EventLog.data">
+<code class="descname">data</code><a class="headerlink" href="#solitude.client.EventLog.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.EventLog.name">
+<code class="descname">name</code><a class="headerlink" href="#solitude.client.EventLog.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.RPCClient">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">RPCClient</code><span class="sig-paren">(</span><em>endpoint: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/rpc_client.html#RPCClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.RPCClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Communicate with JSON-RPC server</p>
+<dl class="method">
+<dt id="solitude.client.RPCClient.batch_call">
+<code class="descname">batch_call</code><span class="sig-paren">(</span><em>functions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/rpc_client.html#RPCClient.batch_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.RPCClient.batch_call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.DebugTracer">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">DebugTracer</code><span class="sig-paren">(</span><em>rpc: solitude.client.rpc_client.RPCClient</em>, <em>compiled: solitude.compiler.compiler.CompiledSources</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_trace.html#DebugTracer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.DebugTracer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="solitude.client.DebugTracer.trace_iter">
+<code class="descname">trace_iter</code><span class="sig-paren">(</span><em>txhash: bytes</em><span class="sig-paren">)</span> &#x2192; Iterator[Tuple[solitude.client.debug_trace.TraceStep, List[solitude.client.debug_trace.TraceStep]]]<a class="reference internal" href="_modules/solitude/client/debug_trace.html#DebugTracer.trace_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.DebugTracer.trace_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.TraceStep">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">TraceStep</code><span class="sig-paren">(</span><em>index</em>, <em>depth</em>, <em>contract_name</em>, <em>pc</em>, <em>op</em>, <em>stack</em>, <em>memory</em>, <em>storage</em>, <em>gas</em>, <em>error</em>, <em>start</em>, <em>length</em>, <em>fileno</em>, <em>jumptype</em>, <em>code</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.TraceStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.code">
+<code class="descname">code</code><a class="headerlink" href="#solitude.client.TraceStep.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 14</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.contract_name">
+<code class="descname">contract_name</code><a class="headerlink" href="#solitude.client.TraceStep.contract_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.depth">
+<code class="descname">depth</code><a class="headerlink" href="#solitude.client.TraceStep.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.error">
+<code class="descname">error</code><a class="headerlink" href="#solitude.client.TraceStep.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.fileno">
+<code class="descname">fileno</code><a class="headerlink" href="#solitude.client.TraceStep.fileno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 12</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.gas">
+<code class="descname">gas</code><a class="headerlink" href="#solitude.client.TraceStep.gas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.index">
+<code class="descname">index</code><a class="headerlink" href="#solitude.client.TraceStep.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.jumptype">
+<code class="descname">jumptype</code><a class="headerlink" href="#solitude.client.TraceStep.jumptype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 13</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.length">
+<code class="descname">length</code><a class="headerlink" href="#solitude.client.TraceStep.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 11</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.memory">
+<code class="descname">memory</code><a class="headerlink" href="#solitude.client.TraceStep.memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.op">
+<code class="descname">op</code><a class="headerlink" href="#solitude.client.TraceStep.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.pc">
+<code class="descname">pc</code><a class="headerlink" href="#solitude.client.TraceStep.pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.stack">
+<code class="descname">stack</code><a class="headerlink" href="#solitude.client.TraceStep.stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.start">
+<code class="descname">start</code><a class="headerlink" href="#solitude.client.TraceStep.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.TraceStep.storage">
+<code class="descname">storage</code><a class="headerlink" href="#solitude.client.TraceStep.storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.SourceMapping">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">SourceMapping</code><span class="sig-paren">(</span><em>path</em>, <em>source</em>, <em>lines</em>, <em>line_index</em>, <em>line_start</em>, <em>line_pos</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.SourceMapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.line_index">
+<code class="descname">line_index</code><a class="headerlink" href="#solitude.client.SourceMapping.line_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.line_pos">
+<code class="descname">line_pos</code><a class="headerlink" href="#solitude.client.SourceMapping.line_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.line_start">
+<code class="descname">line_start</code><a class="headerlink" href="#solitude.client.SourceMapping.line_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.lines">
+<code class="descname">lines</code><a class="headerlink" href="#solitude.client.SourceMapping.lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.path">
+<code class="descname">path</code><a class="headerlink" href="#solitude.client.SourceMapping.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.SourceMapping.source">
+<code class="descname">source</code><a class="headerlink" href="#solitude.client.SourceMapping.source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.CallStackElement">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">CallStackElement</code><span class="sig-paren">(</span><em>prev</em>, <em>step</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.CallStackElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.CallStackElement.prev">
+<code class="descname">prev</code><a class="headerlink" href="#solitude.client.CallStackElement.prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.CallStackElement.step">
+<code class="descname">step</code><a class="headerlink" href="#solitude.client.CallStackElement.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.CallStackEvent">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">CallStackEvent</code><span class="sig-paren">(</span><em>event</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#solitude.client.CallStackEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.CallStackEvent.data">
+<code class="descname">data</code><a class="headerlink" href="#solitude.client.CallStackEvent.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.CallStackEvent.event">
+<code class="descname">event</code><a class="headerlink" href="#solitude.client.CallStackEvent.event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Debugger">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Debugger</code><span class="sig-paren">(</span><em>client: solitude.client.eth_client.ETHClient</em>, <em>txhash</em>, <em>windowsize=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.Debugger.INVALID_STEP">
+<code class="descname">INVALID_STEP</code><em class="property"> = &lt;solitude.client.debug_interactive.Step object&gt;</em><a class="headerlink" href="#solitude.client.Debugger.INVALID_STEP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Debugger.get_callstack_depth">
+<code class="descname">get_callstack_depth</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger.get_callstack_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger.get_callstack_depth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Debugger.get_frames">
+<code class="descname">get_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[solitude.client.debug_interactive.Frame]<a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger.get_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger.get_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Debugger.get_step">
+<code class="descname">get_step</code><span class="sig-paren">(</span><em>i=0</em><span class="sig-paren">)</span> &#x2192; solitude.client.debug_interactive.Step<a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger.get_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger.get_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Debugger.get_variables">
+<code class="descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict[str, solitude.client.debug_interactive.Variable]<a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger.get_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Debugger.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Debugger.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Debugger.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Function">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Function</code><span class="sig-paren">(</span><em>name: str, parameters: List[solitude.client.debug_interactive.Variable]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="solitude.client.Function.to_obj">
+<code class="descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Function.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Function.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Frame">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Frame</code><span class="sig-paren">(</span><em>prev: solitude.client.debug_trace.TraceStep</em>, <em>cur: solitude.client.debug_trace.TraceStep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="solitude.client.Frame.to_obj">
+<code class="descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Frame.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Frame.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Step">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Step</code><span class="sig-paren">(</span><em>step: solitude.client.debug_trace.TraceStep</em>, <em>event: solitude.client.debug_trace.CallStackEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="attribute">
+<dt id="solitude.client.Step.valid">
+<code class="descname">valid</code><a class="headerlink" href="#solitude.client.Step.valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.Variable">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">Variable</code><span class="sig-paren">(</span><em>vtype: str</em>, <em>name: str</em>, <em>value: int</em>, <em>scope: str</em>, <em>origin=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="solitude.client.Variable.to_obj">
+<code class="descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Variable.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Variable.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.Variable.value_native">
+<code class="descname">value_native</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/debug_interactive.html#Variable.value_native"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.Variable.value_native" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.ContractWrapper">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">ContractWrapper</code><span class="sig-paren">(</span><em>client: solitude.client.eth_client.ETHClient</em>, <em>contract_name: str</em>, <em>contract: web3.contract.Contract</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#ContractWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ContractWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Wrapper around web3 contract object. Allows to define wrapper methods
+to call contract functions</p>
+<dl class="attribute">
+<dt id="solitude.client.ContractWrapper.abi">
+<code class="descname">abi</code><a class="headerlink" href="#solitude.client.ContractWrapper.abi" title="Permalink to this definition">¶</a></dt>
+<dd><p>contract abi</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">return</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ContractWrapper.account">
+<code class="descname">account</code><a class="headerlink" href="#solitude.client.ContractWrapper.account" title="Permalink to this definition">¶</a></dt>
+<dd><p>account which is being as sender</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">return</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ContractWrapper.address">
+<code class="descname">address</code><a class="headerlink" href="#solitude.client.ContractWrapper.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>contract address</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">return</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ContractWrapper.call">
+<code class="descname">call</code><span class="sig-paren">(</span><em>func: str</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#ContractWrapper.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ContractWrapper.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ContractWrapper.functions">
+<code class="descname">functions</code><a class="headerlink" href="#solitude.client.ContractWrapper.functions" title="Permalink to this definition">¶</a></dt>
+<dd><p>functions from web3 contract object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">return</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="solitude.client.ContractWrapper.name">
+<code class="descname">name</code><a class="headerlink" href="#solitude.client.ContractWrapper.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.ContractWrapper.transact_sync">
+<code class="descname">transact_sync</code><span class="sig-paren">(</span><em>func: str</em>, <em>*args</em>, <em>value: int = None</em>, <em>gas: int = None</em>, <em>gasprice: int = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#ContractWrapper.transact_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.ContractWrapper.transact_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a transaction and wait for its receipt
+:param func: function name
+:param args: function arguments
+:param value: optional amount of ether to send (in wei)
+:param gas: optional gas limit
+:param gasPrice: optional gas price
+:return: web3 transaction receipt</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="solitude.client.view">
+<code class="descclassname">solitude.client.</code><code class="descname">view</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="solitude.client.payable">
+<code class="descclassname">solitude.client.</code><code class="descname">payable</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#payable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.payable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="solitude.client.nonpayable">
+<code class="descclassname">solitude.client.</code><code class="descname">nonpayable</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#nonpayable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.nonpayable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="solitude.client.pure">
+<code class="descclassname">solitude.client.</code><code class="descname">pure</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#pure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.pure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="solitude.client.IContractNoCheck">
+<em class="property">class </em><code class="descclassname">solitude.client.</code><code class="descname">IContractNoCheck</code><span class="sig-paren">(</span><em>client: solitude.client.eth_client.ETHClient</em>, <em>contract_name: str</em>, <em>contract: web3.contract.Contract</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#IContractNoCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.IContractNoCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">solitude.client.contract_wrapper.ContractWrapper</span></code></p>
+<dl class="method">
+<dt id="solitude.client.IContractNoCheck.call">
+<code class="descname">call</code><span class="sig-paren">(</span><em>func: str</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#IContractNoCheck.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.IContractNoCheck.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="solitude.client.IContractNoCheck.transact_sync">
+<code class="descname">transact_sync</code><span class="sig-paren">(</span><em>func: str</em>, <em>*args</em>, <em>value: int = None</em>, <em>gas: int = None</em>, <em>gasprice: int = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solitude/client/contract_wrapper.html#IContractNoCheck.transact_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solitude.client.IContractNoCheck.transact_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a transaction and wait for its receipt
+:param func: function name
+:param args: function arguments
+:param value: optional amount of ether to send (in wei)
+:param gas: optional gas limit
+:param gasPrice: optional gas price
+:return: web3 transaction receipt</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="solitude.compiler.html" class="btn btn-neutral float-right" title="solitude.compiler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="solitude.html" class="btn btn-neutral float-left" title="solitude" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Solitude Developers
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

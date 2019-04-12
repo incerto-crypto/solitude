@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>solitude._internal.config_util &mdash; solitude 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> solitude
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.html">solitude</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.client.html">solitude.client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.compiler.html">solitude.compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.testing.html">solitude.testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.tools.html">solitude.tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solitude.server.html">solitude.server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">solitude</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../solitude.html">solitude</a> &raquo;</li>
+        
+      <li>solitude._internal.config_util</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for solitude._internal.config_util</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2019, Solitude Developers</span>
+<span class="c1">#</span>
+<span class="c1"># This source code is licensed under the BSD-3-Clause license found in the</span>
+<span class="c1"># COPYING file in the root directory of this source tree</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">solitude.errors</span> <span class="k">import</span> <span class="n">SetupError</span>
+<span class="kn">import</span> <span class="nn">jsonschema</span>
+
+<span class="kn">from</span> <span class="nn">solitude._internal.config_schema</span> <span class="k">import</span> <span class="n">SCHEMA</span>
+
+
+<span class="k">def</span> <span class="nf">config_schema_to_defaults</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extracts default required values from a jsonschema</span>
+
+<span class="sd">    The json schema must be an object and have defaults for</span>
+<span class="sd">        all properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]:</span>
+        <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cfg</span>
+
+
+<span class="c1"># adapted from https://stackoverflow.com/questions/25108581/python-yaml-dump-bad-indentation</span>
+<span class="k">class</span> <span class="nc">MySafeDumper</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">increase_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indentless</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">increase_indent</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<span class="c1"># adapted from https://stackoverflow.com/questions/5121931/in-python-how-can-you-load-yaml-mappings-as-ordereddicts</span>
+<span class="k">def</span> <span class="nf">yaml_ordered_load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">OrderedLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">construct_mapping</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">loader</span><span class="o">.</span><span class="n">flatten_mapping</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">object_pairs_hook</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">construct_pairs</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="n">OrderedLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">resolver</span><span class="o">.</span><span class="n">BaseResolver</span><span class="o">.</span><span class="n">DEFAULT_MAPPING_TAG</span><span class="p">,</span>
+        <span class="n">construct_mapping</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">OrderedLoader</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">yaml_ordered_dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">MySafeDumper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">OrderedDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_dict_representer</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">resolver</span><span class="o">.</span><span class="n">BaseResolver</span><span class="o">.</span><span class="n">DEFAULT_MAPPING_TAG</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">OrderedDumper</span><span class="o">.</span><span class="n">add_representer</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">_dict_representer</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">OrderedDumper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="read_config_file"><a class="viewcode-back" href="../../../solitude.html#solitude.read_config_file">[docs]</a><span class="k">def</span> <span class="nf">read_config_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a solitude configuration from yaml or json file.</span>
+
+<span class="sd">    :param path: path to configuration file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Configuration file must be either .yaml or .json&quot;</span><span class="p">)</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">config_schema_to_defaults</span><span class="p">(</span><span class="n">SCHEMA</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">cfg_from_file</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cfg_from_file</span> <span class="o">=</span> <span class="n">yaml_ordered_load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfg_from_file</span><span class="p">)</span>
+    <span class="n">update_cfg_with_env_overrides</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">SCHEMA</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<div class="viewcode-block" id="write_config_file"><a class="viewcode-back" href="../../../solitude.html#solitude.write_config_file">[docs]</a><span class="k">def</span> <span class="nf">write_config_file</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Configuration file must be either .yaml or .json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yaml_ordered_dump</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">parse_port_range</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">port</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Port is not a valid port or range&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">parse_server_account</span><span class="p">(</span><span class="n">account</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;wei&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;kwei&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;ada&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;mwei&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+        <span class="s2">&quot;babbage&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+        <span class="s2">&quot;gwei&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+        <span class="s2">&quot;shannon&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+        <span class="s2">&quot;micro&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">12</span><span class="p">,</span>
+        <span class="s2">&quot;szabo&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">12</span><span class="p">,</span>
+        <span class="s2">&quot;finney&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">15</span><span class="p">,</span>
+        <span class="s2">&quot;milli&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">15</span><span class="p">,</span>
+        <span class="s2">&quot;eth&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span><span class="p">,</span>
+        <span class="s2">&quot;ether&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span><span class="p">,</span>
+        <span class="s2">&quot;kether&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">21</span><span class="p">,</span>
+        <span class="s2">&quot;mether&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">24</span><span class="p">,</span>
+        <span class="s2">&quot;gether&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">27</span><span class="p">,</span>
+        <span class="s2">&quot;tether&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">30</span><span class="p">}</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="mi">10</span><span class="o">**</span><span class="mi">20</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^([0-9\.]+)\s*(&quot;</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|)$&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)]))</span>
+    <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Account must be of format &#39;0xPrivateKey [,Ether]&#39;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">update_cfg_with_env_overrides</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">PREFIX</span> <span class="o">=</span> <span class="s2">&quot;SOL_&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):</span>
+            <span class="n">cfgkey</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfgkey</span> <span class="ow">in</span> <span class="n">SCHEMA</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="n">cfgkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpret_value_with_schema</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SCHEMA</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">cfgkey</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SetupError</span><span class="p">(</span><span class="s2">&quot;Could not decode environment variable override </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">try_interpret_value_with_schema_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">jsonschema_type</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value_obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">value_obj</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;array&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value_obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">value_obj</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">elif</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;number&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;integer&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">jsonschema_type</span> <span class="o">==</span> <span class="s2">&quot;null&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;null&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">interpret_value_with_schema</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="n">TYPE_PRIORITY</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;integer&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;null&quot;</span><span class="p">:</span> <span class="mi">4</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">try_interpret_value_with_schema_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="s2">&quot;anyOf&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">option</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;anyOf&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">option</span><span class="p">)]</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">TYPE_PRIORITY</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">try_interpret_value_with_schema_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Solitude Developers
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
