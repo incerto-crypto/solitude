@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$TRAVIS_BRANCH" == "feature/ci-cd" ]; then
     #TO-DO: change feature/ci-cd -> master 
-    pip install -r ci/requirement-ci.txt
+    pip install -r ci/requirements-ci.txt
     cd docs
     git checkout gh-pages
     make html
@@ -9,5 +9,4 @@ if [ "$TRAVIS_BRANCH" == "feature/ci-cd" ]; then
     git commit -m $TRAVIS_COMMIT
     git push
 fi
-
 
