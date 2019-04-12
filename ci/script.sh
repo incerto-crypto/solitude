@@ -12,6 +12,7 @@ if [ "$TRAVIS_BRANCH" == "feature/ci-cd" ]; then
     git branch -a
     git checkout gh-pages
     git merge temp-branch
-    git push origin gh-pages
+    remote=https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG
+    git push --quiet --follow-tags "$remote" "gh-pages"
 fi
 
