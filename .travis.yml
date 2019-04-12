@@ -6,3 +6,5 @@ install:
   - pip install -U attrs .
 script:
   - pytest -v tests
+after_success:
+  - bash ci/script.sh 
