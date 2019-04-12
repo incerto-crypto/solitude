@@ -5,7 +5,7 @@
 
 """Compiler
 
-This module provides tool for compiling and linting smartcontract and manages
+This module provides tools for compiling and linting smartcontract and manages
 the source code and the compiled files. 
 
 """
