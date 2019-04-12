@@ -2,7 +2,7 @@
 if [ "$TRAVIS_BRANCH" == "feature/ci-cd" ]; then
     #TO-DO: change feature/ci-cd -> master 
     pip install -r ci/requirements-ci.txt
-
+    git fetch --all
     cd docs
     make html
     git add build -f
