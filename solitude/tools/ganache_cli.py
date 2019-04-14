@@ -4,7 +4,7 @@
 # COPYING file in the root directory of this source tree
 
 from solitude.tools.base import ToolNpmTemplate
-from solitude._internal import get_global_config
+from solitude.common.resource_util import get_global_config
 
 
 class GanacheCli(ToolNpmTemplate):

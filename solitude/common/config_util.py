@@ -6,13 +6,16 @@
 from typing import Union, Tuple, Optional
 import os
 import json
-import yaml
 import re
+import io
 from collections import OrderedDict
-from solitude.errors import SetupError
+
+import yaml
 import jsonschema
 
 from solitude._internal.config_schema import SCHEMA
+from solitude.common import open_url
+from solitude.common.errors import SetupError
 
 
 def config_schema_to_defaults(schema):
@@ -26,6 +29,10 @@ def config_schema_to_defaults(schema):
     for key in schema["required"]:
         cfg[key] = properties[key]["default"]
     return cfg
+
+
+def make_default_config():
+    return config_schema_to_defaults(SCHEMA)
 
 
 # adapted from https://stackoverflow.com/questions/25108581/python-yaml-dump-bad-indentation
@@ -60,14 +67,12 @@ def yaml_ordered_dump(data, stream=None, Dumper=MySafeDumper, **kwargs):
     return yaml.dump(data, stream, OrderedDumper, **kwargs)
 
 
-def read_yaml_or_json_file(path: str):
-    if os.path.splitext(path)[-1] not in (".json", ".yaml"):
-        raise SetupError("Configuration file must be either .yaml or .json")
-    with open(path, 'r') as fp:
-        if path.endswith(".json"):
-            return json.load(fp, object_pairs_hook=OrderedDict)
-        else:
+def read_yaml_or_json(url: str):
+    with open_url(url, decode=True) as fp:
+        if url.endswith(".yaml"):
             return yaml_ordered_load(fp)
+        else:
+            return json.load(fp, object_pairs_hook=OrderedDict)
 
 
 def read_config_file(path: str):
@@ -75,8 +80,8 @@ def read_config_file(path: str):
 
     :param path: path to configuration file
     """
-    cfg_from_file = read_yaml_or_json_file(path)
-    cfg = config_schema_to_defaults(SCHEMA)
+    cfg_from_file = read_yaml_or_json(path)
+    cfg = make_default_config()
     cfg.update(cfg_from_file)
     update_cfg_with_env_overrides(cfg)
     try:
@@ -87,23 +92,11 @@ def read_config_file(path: str):
 
 
 def write_config_file(cfg: Union[dict, OrderedDict], path: str):
-    if os.path.splitext(path)[-1] not in (".json", ".yaml"):
-        raise SetupError("Configuration file must be either .yaml or .json")
     with open(path, 'w') as fp:
-        if path.endswith(".json"):
-            json.dump(cfg, fp, indent=4)
-        else:
+        if path.endswith(".yaml"):
             yaml_ordered_dump(cfg, fp, default_flow_style=False)
-
-
-def parse_port_range(port: Union[str, int]) -> Tuple[int, int]:
-    if isinstance(port, str):
-        v = port.split(",")
-        if len(v) <= 2:
-            return (int(v[0].strip()), int(v[1].strip()))
-    elif isinstance(port, int):
-        return (port, port)
-    raise SetupError("Port is not a valid port or range")
+        else:
+            json.dump(cfg, fp, indent=4)
 
 
 def parse_server_account(account: str) -> Tuple[str, int]:

@@ -12,7 +12,7 @@ import threading
 import subprocess
 from collections import namedtuple
 from solitude.client.rpc_client import RPCClient
-from solitude.errors import SetupError, RPCError
+from solitude.common.errors import SetupError, CommunicationError
 
 # TODO fix coordination of multiple ganache instances for test parallelization
 
@@ -166,7 +166,7 @@ class RPCTestServer:
                 is_listening = self._rpc.net_listening()
                 if is_listening is True:
                     break
-            except RPCError:
+            except CommunicationError:
                 pass
             if time.time() - time_begin > timeout:
                 self.kill()

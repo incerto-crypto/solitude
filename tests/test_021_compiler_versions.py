@@ -9,23 +9,16 @@ from solitude.tools import Solc
 from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
 from solitude.errors import CompilerError
-from conftest import tooldir  # noqa
+from conftest import tooldir, SOLIDITY_ALL_VERSIONS  # noqa
 from distutils.version import StrictVersion
 
 
-VERSIONS = [
-    "0.4.16", "0.4.17", "0.4.18", "0.4.19", "0.4.20", "0.4.21", "0.4.22",
-    "0.4.23", "0.4.24", "0.4.25",
-
-    "0.5.0", "0.5.1", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.5.6", "0.5.7"
-]
-
-
 # test for each solc version
-@pytest.fixture(scope="module", params=VERSIONS)
+@pytest.fixture(scope="module", params=SOLIDITY_ALL_VERSIONS)
 def tool_solc(request, tooldir):
     tool = Solc(tooldir=tooldir, version=request.param)
-    tool.add()
+    if not tool.have():
+        tool.add()
     yield tool
 
 

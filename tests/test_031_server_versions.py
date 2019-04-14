@@ -6,22 +6,15 @@ from solitude.server import RPCTestServer, kill_all_servers
 from solitude.client import ETHClient, ContractBase
 from solitude.tools import GanacheCli
 from conftest import (  # noqa
-    tooldir, tool_solc, SOLIDITY_VERSION)
-
-
-VERSIONS = [
-    "6.1.5", "6.1.6", "6.1.7", "6.1.8",
-    "6.2.0", "6.2.1", "6.2.2", "6.2.3", "6.2.4", "6.2.5",
-    "6.3.0",
-    "6.4.0", "6.4.1", "6.4.2"
-]
+    tooldir, tool_solc, SOLIDITY_VERSION, GANACHE_ALL_VERSIONS)
 
 
 # test for each ganache version
-@pytest.fixture(scope="module", params=VERSIONS)
+@pytest.fixture(scope="module", params=GANACHE_ALL_VERSIONS)
 def tool_ganache(request, tooldir):
     tool = GanacheCli(tooldir=tooldir, version=request.param)
-    tool.add()
+    if not tool.have():
+        tool.add()
     yield tool
 
 
@@ -48,9 +41,8 @@ def test_0001_pay(server: RPCTestServer, tool_solc):
             contract_name=CONTRACT_NAME))
     compiled = compiler.compile(sources)
 
-    client = ETHClient(
-        endpoint=server.endpoint,
-        compiled=compiled)
+    client = ETHClient(endpoint=server.endpoint)
+    client.update_contracts(compiled)
     with client.account(0):
         TestContract = client.deploy(
             CONTRACT_NAME, args=(), wrapper=MyTestContractWrapper)

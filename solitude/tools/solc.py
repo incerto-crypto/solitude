@@ -3,17 +3,16 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-import requests
 import sys
 import os
-import stat
 import shutil
-from zipfile import ZipFile
+
 from solitude.tools.base import (
     Tool, ToolNpmTemplate, ToolDownloadTemplate)
-from solitude._internal import get_resource_path, get_global_config
+from solitude.common.resource_util import get_resource_path, get_global_config
 from solitude._internal.os_compat import (
     append_executable_extension, set_executable_flag, get_platform, Platform)
+from solitude.common.errors import CommunicationError
 
 
 class SolcEmscripten(ToolNpmTemplate):
@@ -34,7 +33,7 @@ class SolcEmscripten(ToolNpmTemplate):
             shutil.copy(solcjs_standard_json, executable_real_path)
             set_executable_flag(executable_real_path)
         except (OSError, FileNotFoundError) as e:
-            raise InstallError from e
+            raise CommunicationError(str(e)) from e
 
 
 class SolcNativeWindows(ToolDownloadTemplate):

@@ -6,7 +6,7 @@
 from typing import List, Optional  # noqa
 import web3
 import solitude.client.eth_client  # noqa
-from solitude.errors import TransactionError, CallForbiddenError
+from solitude.common.errors import TransactionError
 from solitude.common import TransactionInfo
 import functools
 
@@ -87,15 +87,22 @@ class ContractBase:
         :return: web3 transaction receipt
         """
         txargs = {
-            "from": self._client.get_current_account(),
-            "gas": self._client._default_gas
+            "from": self._client.get_current_account()
         }
+        
         if value is not None:
             txargs["value"] = value
+
         if gas is not None:
             txargs["gas"] = gas
+        elif self._client._default_gaslimit is not None:
+            txargs["gas"] = self._client._default_gaslimit
+
         if gasprice is not None:
             txargs["gasPrice"] = gasprice
+        elif self._client._default_gasprice is not None:
+            txargs["gasPrice"] = self._client._default_gasprice
+
         txhash = None
         receipt = None
         try:

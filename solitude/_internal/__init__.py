@@ -6,9 +6,11 @@
 from solitude._internal.enum_type import EnumType
 from solitude._internal.error_util import (
     internal_assert, isfile_assert, value_assert, type_assert, RaiseForParam)
-from solitude._internal.resource_util import (
-    get_resource_path, get_global_config, copy_from_url)
 from solitude._internal import config_schema
+
+from solitude._internal.oi_serializable import ISerializable
+from solitude._internal.oi_interface import ObjectInterface, ObjectInterfaceException
+from solitude._internal.oi_common_objects import ColorText
 
 
 class Config:
@@ -26,7 +28,8 @@ __all__ = [
 
     "Config",
 
-    "get_resource_path",
-    "get_global_config",
-    "copy_from_url"
+    "ISerializable",
+    "ObjectInterface",
+    "ObjectInterfaceError",
+    "ColorText"
 ]

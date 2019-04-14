@@ -4,9 +4,11 @@
 # COPYING file in the root directory of this source tree
 
 from typing import Optional, Dict, List
-from solitude.client.eth_client import ETHClient
-from solitude.client.debug_trace import DebugTracer, TraceStep, CallStackEvent  # noqa
+
 from web3 import Web3
+
+from solitude.client.eth_client import ETHClient
+from solitude.debugger.evm_trace import EvmTrace, TraceStep, CallStackEvent  # noqa
 
 
 class Variable:
@@ -87,19 +89,19 @@ class Step:
         return self.step is not None
 
 
-class Debugger:
+class EvmDebugCore:
     INVALID_STEP = Step(None, CallStackEvent(None, None))
 
     def __init__(self, client: ETHClient, txhash, windowsize=50):
         self._client = client
-        self._dbg = DebugTracer(client.rpc, client.compiled)
+        self._dbg = EvmTrace(client.rpc, client.compiled)
         self._txhash = txhash
 
         self._astmaps = self._create_ast_maps(client.compiled)
 
         self._windowsize = windowsize
         self._window_offset = 0
-        self._window = [Debugger.INVALID_STEP] * (1 + 2 * self._windowsize)
+        self._window = [EvmDebugCore.INVALID_STEP] * (1 + 2 * self._windowsize)
 
         self._frames = []  # type: List[Frame]
 
@@ -140,7 +142,7 @@ class Debugger:
     def _get_window_rel(self, i):
         if self._windowsize + i < len(self._window):
             return self._window[self._windowsize + i]
-        return Debugger.INVALID_STEP
+        return EvmDebugCore.INVALID_STEP
 
     def _get_window_abs(self, i):
         return self._get_window_rel(i - self._window_offset)
@@ -163,7 +165,7 @@ class Debugger:
                 s.ast = self._get_ast_nodes(s.step)
                 self._window.append(s)
             except StopIteration:
-                self._window.append(Debugger.INVALID_STEP)
+                self._window.append(EvmDebugCore.INVALID_STEP)
             self._window_offset += 1
 
     def _extract_variable(self, step: TraceStep, astnode: dict, stackpos: int, origin=None) -> List[Variable]:

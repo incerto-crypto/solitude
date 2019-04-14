@@ -7,14 +7,14 @@ import shlex
 import traceback
 
 
-class CmdException(Exception):
+class ObjectInterfaceException(Exception):
     def __init__(self, name, args=None):
         self.name = name
         self.eargs = args if args else []
         super().__init__(name)
 
 
-class ObjectUI:
+class ObjectInterface:
     def __init__(self):
         self._oui_commands = {}
         self._oui_handlers = {}
@@ -37,7 +37,7 @@ class ObjectUI:
 
     def _oui_default_handler(self, e):
         traceback.print_exc()
-        return ObjectUI._oui_make_error(e)
+        return ObjectInterface._oui_make_error(e)
 
     @staticmethod
     def _oui_make_error(e):
@@ -65,17 +65,17 @@ class ObjectUI:
     def _oui_handle_error(self, e):
         if e.name == "_quit":
             self._oui_quit = True
-            return ObjectUI._oui_make_quit()
+            return ObjectInterface._oui_make_quit()
         try:
             if e.name in self._oui_handlers:
                 response = self._oui_handlers[e.name](e.eargs)
-                return ObjectUI._oui_make_response(response)
+                return ObjectInterface._oui_make_response(response)
             else:
                 return self._oui_default_handler(e)
-        except CmdException as e:
+        except ObjectInterfaceException as e:
             if e.name == "_quit":
                 self._oui_quit = True
-                return ObjectUI._oui_make_quit()
+                return ObjectInterface._oui_make_quit()
             raise
         except Exception as e:
             return self._oui_default_handler(e)
@@ -84,23 +84,23 @@ class ObjectUI:
         try:
             command, args = obj["command"], obj["args"]
             if not isinstance(command, str):
-                return self._oui_handle_error(CmdException("_syntax", [obj]))
+                return self._oui_handle_error(ObjectInterfaceException("_syntax", [obj]))
         except (KeyError, ValueError):
-            return self._oui_handle_error(CmdException("_syntax", [obj]))
+            return self._oui_handle_error(ObjectInterfaceException("_syntax", [obj]))
 
         if command not in self._oui_commands:
-            return self._oui_handle_error(CmdException("_command", [obj]))
+            return self._oui_handle_error(ObjectInterfaceException("_command", [obj]))
         try:
             response = self._oui_commands[command](args)
-            return ObjectUI._oui_make_response(response)
-        except CmdException as e:
+            return ObjectInterface._oui_make_response(response)
+        except ObjectInterfaceException as e:
             return self._oui_handle_error(e)
         except Exception as e:
             return self._oui_default_handler(e)
 
     def call(self, obj):
         if self._oui_quit:
-            return ObjectUI._oui_make_quit()
+            return ObjectInterface._oui_make_quit()
         return self._oui_handle_command(obj)
 
 

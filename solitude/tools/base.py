@@ -11,12 +11,14 @@ import shutil
 import sys
 import json
 import re
+
 import requests
 from zipfile import ZipFile
-from solitude.errors import InstallError
-from solitude._internal import internal_assert, get_resource_path, get_global_config, copy_from_url
+
+from solitude._internal import internal_assert
 from solitude._internal.os_compat import (
     append_executable_extension, set_executable_flag, is_valid_path)
+from solitude.common.resource_util import get_resource_path, get_global_config, copy_from_url
 
 
 class Tool:
@@ -116,7 +118,7 @@ class ToolNpmTemplate(Tool):
                 cwd=self._location,
                 shell=is_windows)
         except (OSError, FileNotFoundError) as e:
-            raise InstallError from e
+            raise CommunicationError(str(e)) from e
 
     def remove(self):
         shutil.rmtree(self._location)
@@ -159,7 +161,7 @@ class ToolDownloadTemplate(Tool):
                 copy_from_url(self._url, self._executable_path)
                 set_executable_flag(self._executable_path)
         except (OSError, FileNotFoundError) as e:
-            raise InstallError from e
+            raise CommunicationError(str(e)) from e
 
     def remove(self):
         shutil.rmtree(self._location)

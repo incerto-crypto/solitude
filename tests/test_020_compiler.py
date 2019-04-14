@@ -8,7 +8,7 @@ import pytest
 from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
 from solitude.errors import CompilerError
-from conftest import tooldir, tool_solc, SOLIDITY_VERSION  # noqa
+from conftest import tooldir, tmpdir, tool_solc, SOLIDITY_VERSION  # noqa
 
 
 def find_line(text, needle):
@@ -35,11 +35,11 @@ def test_0001_compile_string(tool_solc):
     assert(compiled.select(CONTRACT_NAME)["_solitude"]["contractName"] == CONTRACT_NAME)
 
 
-def test_0002_compile_file(tooldir, tool_solc):
+def test_0002_compile_file(tooldir, tmpdir, tool_solc):
     sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContractFromFile0002"
-    contract_file = os.path.join(tooldir, CONTRACT_NAME + ".sol")
+    contract_file = os.path.join(tmpdir, CONTRACT_NAME + ".sol")
     with open(contract_file, 'w') as fp:
         fp.write(TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
@@ -52,13 +52,13 @@ def test_0002_compile_file(tooldir, tool_solc):
     assert(compiled.select(CONTRACT_NAME)["_solitude"]["contractName"] == CONTRACT_NAME)
 
 
-def test_0003_compile_file_and_string(tooldir, tool_solc):
+def test_0003_compile_file_and_string(tooldir, tmpdir, tool_solc):
     sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME_STRING = "TestContractFromString"
     CONTRACT_NAME_FILE = "TestContractFromFile0003"
     SOURCE_NAME = "test"
-    contract_file = os.path.join(tooldir, CONTRACT_NAME_FILE + ".sol")
+    contract_file = os.path.join(tmpdir, CONTRACT_NAME_FILE + ".sol")
     with open(contract_file, 'w') as fp:
         fp.write(TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,
@@ -84,12 +84,12 @@ def test_0003_compile_file_and_string(tooldir, tool_solc):
         CONTRACT_NAME_FILE)
 
 
-def test_0004_compile_duplicate_name(tooldir, tool_solc):
+def test_0004_compile_duplicate_name(tooldir, tmpdir, tool_solc):
     sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))
     CONTRACT_NAME = "TestContract"
     UNIT_NAME = "test"
-    contract_file = os.path.join(tooldir, CONTRACT_NAME + ".sol")
+    contract_file = os.path.join(tmpdir, CONTRACT_NAME + ".sol")
     with open(contract_file, 'w') as fp:
         fp.write(TEST_CONTRACT.format(
             solidity_version=SOLIDITY_VERSION,

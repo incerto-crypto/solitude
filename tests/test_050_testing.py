@@ -8,7 +8,7 @@ from solitude.common import ContractSourceList
 from solitude.server import RPCTestServer, kill_all_servers  # noqa
 from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
-from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION  # noqa
+from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -23,7 +23,7 @@ def contracts(sol: SOL):
 
 
 def test_0001_pay(sol: SOL):
-    with sol.account("attila"):
+    with sol.account(ATTILA):
         TestContract = sol.deploy(
             CONTRACT_NAME, args=(), wrapper=ITestContract)
         value = TestContract.pay(100, 110)

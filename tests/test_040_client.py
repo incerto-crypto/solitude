@@ -61,9 +61,9 @@ def client(tool_solc, server):
         }
         """))
     compiled = compiler.compile(sources)
-    return ETHClient(
-        endpoint=server.endpoint,
-        compiled=compiled)
+    client = ETHClient(endpoint=server.endpoint)
+    client.update_contracts(compiled)
+    return client
 
 
 @pytest.fixture(scope="function")

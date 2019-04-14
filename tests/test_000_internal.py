@@ -7,7 +7,7 @@ import os
 
 
 def test_0001_resources():
-    from solitude._internal.resource_util import get_resource_path
+    from solitude.common.resource_util import get_resource_path
     REQUIRED_RESOURCES = [
         "report.filemessage.default.html"
     ]

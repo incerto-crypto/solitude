@@ -20,7 +20,8 @@ def assertOutputContainsVersion(output, version, index=0):
 
 def test_0001_install_compiler(tooldir):
     solc = Solc(tooldir, version=SOLIDITY_VERSION)
-    solc.add()
+    if not solc.have():
+        solc.add()
     output = subprocess.check_output(
         [solc.get("solc"), "--version"])
     assertOutputContainsVersion(output, SOLIDITY_VERSION, index=-1)
@@ -28,7 +29,8 @@ def test_0001_install_compiler(tooldir):
 
 def test_0002_install_ganache(tooldir):
     ganache = GanacheCli(tooldir, version=GANACHE_VERSION)
-    ganache.add()
+    if not ganache.have():
+        ganache.add()
     output = subprocess.check_output(
         [ganache.get("ganache-cli"), "--version"])
     assertOutputContainsVersion(output, GANACHE_VERSION, index=-1)
@@ -36,7 +38,8 @@ def test_0002_install_ganache(tooldir):
 
 def test_0003_install_solium(tooldir):
     solium = Solium(tooldir, version=SOLIUM_VERSION)
-    solium.add()
+    if not solium.have():
+        solium.add()
     output = subprocess.check_output(
         [solium.get("solium"), "--version"])
     assertOutputContainsVersion(output, SOLIUM_VERSION, index=-1)

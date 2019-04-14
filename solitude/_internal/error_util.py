@@ -4,7 +4,7 @@
 # COPYING file in the root directory of this source tree
 
 import os
-from solitude.errors import InternalError
+from solitude._internal.errors import InternalError
 
 
 def internal_assert(cond: bool, message: str, data=None):

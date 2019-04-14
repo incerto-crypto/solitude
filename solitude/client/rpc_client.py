@@ -3,9 +3,9 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-import requests
 import json
-from solitude.errors import RPCError
+import requests
+from solitude.common.errors import CommunicationError
 
 
 def iter_list_or_single(obj):
@@ -41,17 +41,17 @@ class RPCClient:
         try:
             http_response = self._session.post(self._endpoint, json=data)
         except requests.exceptions.ConnectionError:
-            raise RPCError("Connection Error: %s" % self._endpoint)
+            raise CommunicationError("Connection Error: %s" % self._endpoint)
         if http_response.status_code != 200:
-            raise RPCError("Received HTTP status code %d" % http_response.status_code)
+            raise CommunicationError("Received HTTP status code %d" % http_response.status_code)
         response = json.loads(http_response.text)
 
         for req, resp in zip(iter_list_or_single(data), iter_list_or_single(response)):
             if resp.get("id") != req["id"]:
-                raise RPCError("Call id mismatch: expected %r, received %r" % (
+                raise CommunicationError("Call id mismatch: expected %r, received %r" % (
                     req["id"], resp.get("id")))
             if "result" not in resp:
-                raise RPCError("Received empty response")
+                raise CommunicationError("Received empty response")
             yield resp["result"]
 
     def __getattr__(self, key):

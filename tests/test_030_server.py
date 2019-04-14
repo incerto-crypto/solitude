@@ -24,7 +24,7 @@ def server(tool_ganache):
 
 
 def test_0001_run(server: RPCTestServer):
-    client = ETHClient(endpoint=server.endpoint, compiled=ContractObjectList())
+    client = ETHClient(endpoint=server.endpoint)
     client.mine_block()
     blocktime = client.get_last_blocktime()
     now = datetime.datetime.now()
@@ -47,9 +47,9 @@ def test_0002_increase_time(server: RPCTestServer, tool_solc):
             contract_name=CONTRACT_NAME))
     compiled = compiler.compile(sources)
 
-    client = ETHClient(
-        endpoint=server.endpoint,
-        compiled=compiled)
+    client = ETHClient(endpoint=server.endpoint)
+    client.update_contracts(compiled)
+
     with client.account(0):
         TestContract = client.deploy(
             CONTRACT_NAME, args=(), wrapper=MyTestContractWrapper)
@@ -80,9 +80,8 @@ def test_0003_pay(server: RPCTestServer, tool_solc):
             contract_name=CONTRACT_NAME))
     compiled = compiler.compile(sources)
 
-    client = ETHClient(
-        endpoint=server.endpoint,
-        compiled=compiled)
+    client = ETHClient(endpoint=server.endpoint)
+    client.update_contracts(compiled)
     with client.account(0):
         TestContract = client.deploy(
             CONTRACT_NAME, args=(), wrapper=MyTestContractWrapper)

@@ -43,11 +43,25 @@ SCHEMA = {
     "title": "SolitudeConfiguration",
     "type": "object",
     "properties": {
+
+        # Project
         "Project.Name": {
             "type": "string",
             "description": "Your project's name",
             "default": "MyProject"
         },
+        "Project.SourceDir": {
+            "type": "string",
+            "description": "Directories where the contract source files are located",
+            "default": "./contracts"
+        },
+        "Project.ObjectDir": {
+            "type": "string",
+            "description": "Directory where the (compiled) contract objects are located",
+            "default": "./build/contracts"
+        },
+
+        # Tools
         "Tools.Directory": {
             "type": "string",
             "description": "Path to the directory where the downloaded tools will be installed",
@@ -77,12 +91,16 @@ SCHEMA = {
             "description": "List of tools required by your project",
             "default": DEFAULT_REQUIRED_TOOLS
         },
+
+        # Server
+        "Server.Host": {
+            "type": "string",
+            "description": "Host on which to start the server",
+            "default": "127.0.0.1"
+        },
         "Server.Port": {
-            "anyOf": [
-                {"type": "number"},
-                {"type": "string"}
-            ],
-            "description": "Port or range of ports on which the server can be started",
+            "type": "number",
+            "description": "Port on which the server is started",
             "default": DEFAULT_RPC_PORT
         },
         "Server.Accounts": {
@@ -101,11 +119,6 @@ SCHEMA = {
             "description": "Starting block time for the server",
             "default": None
         },
-        "Server.Host": {
-            "type": "string",
-            "description": "Host on which to start the server",
-            "default": "127.0.0.1"
-        },
         "Server.GasPrice": {
             "type": "integer",
             "description": "Price of gas for the server",
@@ -116,51 +129,31 @@ SCHEMA = {
             "description": "Gas limit for the server",
             "default": 6721975
         },
-        "Testing.StartServer": {
-            "type": "boolean",
-            "description": "Run a server instance on creation of the testing context",
-            "default": True
-        },
+
+        # Client
         "Client.Endpoint": {
             "type": "string",
             "description": "Endpoint to which the RPC client should connect to",
             "default": "http://127.0.0.1:%d" % DEFAULT_RPC_PORT
         },
-        "Client.AccountAliases": {
-            "type": "object",
-            "description": "Friendly names for the accounts from the account storage",
-            "default": {"attila": 0, "george": 1}
+        "Client.GasPrice": {
+            "anyOf": [
+                {"type": "integer"},
+                {"type": "null"}
+            ],
+            "description": "Default gas price for transactions",
+            "default": None
         },
-        "Client.ContractBuildDir": {
-            "type": "string",
-            "description": "Directory where built contracts are found, to get the ABI",
-            "default": "./eth/build"
+        "Client.GasLimit": {
+            "anyOf": [
+                {"type": "integer"},
+                {"type": "null"}
+            ],
+            "description": "Default gas limit for the transactions",
+            "default": None
         },
-        "Client.GasLogDir": {
-            "type": "string",
-            "description": "Directory where the transaction logs will be stored",
-            "default": "./log"
-        },
-        "Client.EnableGasLog": {
-            "type": "boolean",
-            "description": "Enable transaction logging",
-            "default": False
-        },
-        "Client.DefaultGas": {
-            "type": "integer",
-            "description": "Default amount of gas configured for the client's transactions",
-            "default": 1000000
-        },
-        "Compiler.ContractDir": {
-            "type": "string",
-            "description": "Directories where the contract sources to compile are located",
-            "default": "./eth/contracts"
-        },
-        "Compiler.BuildDir": {
-            "type": "string",
-            "description": "Directory where contracts built by the compiler will be stored",
-            "default": "./eth/build"
-        },
+
+        # Compiler
         "Compiler.Optimize": {
             "anyOf": [
                 {"type": "integer"},
@@ -169,7 +162,8 @@ SCHEMA = {
             "description": "Solidity compiler optimize runs, or null for no optimization",
             "default": None
         },
-        "Compiler.Lint.Plugins": {
+
+        "Linter.Plugins": {
             "type": "array",
             "description": "List of plugins solium linter",
             "items": {
@@ -177,41 +171,63 @@ SCHEMA = {
             },
             "default": ["security"]
         },
-        "Compiler.Lint.Rules": {
+        "Linter.Rules": {
             "type": "object",
             "description": "Rules (configuration) for solium linter",
             "default": {
                 "quotes": ["error", "double"],
                 "indentation": ["error", 4]
             }
+        },
+
+        "Testing.RunServer": {
+            "type": "boolean",
+            "description": "Run a server instance on creation of the testing context",
+            "default": True
+        },
+        "Testing.PortRange": {
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Port range that can be used by the tests",
+            "default": [8600, 8700]
         }
     },
     "additionalProperties": False,
     "required": [
         "Project.Name",
+        "Project.SourceDir",
+        "Project.ObjectDir",
+
         "Tools.Directory",
         "Tools.Solc.Version",
         "Tools.GanacheCli.Version",
         "Tools.Solium.Version",
         "Tools.Required",
+
         "Server.Port",
         "Server.Accounts",
         "Server.BlockTime",
         "Server.Host",
         "Server.GasPrice",
         "Server.GasLimit",
-        "Testing.StartServer",
+
         "Client.Endpoint",
-        "Client.AccountAliases",
-        "Client.ContractBuildDir",
-        "Client.GasLogDir",
-        "Client.EnableGasLog",
-        "Client.DefaultGas",
-        "Compiler.ContractDir",
-        "Compiler.BuildDir",
+        "Client.GasPrice",
+        "Client.GasLimit",
+
         "Compiler.Optimize",
-        "Compiler.Lint.Plugins",
-        "Compiler.Lint.Rules"
+
+        "Linter.Plugins",
+        "Linter.Rules",
+
+        "Testing.RunServer",
+        "Testing.PortRange"
     ]
 }
 

@@ -38,7 +38,7 @@ SETUP = lambda: dict(
     ],
     entry_points={
         "console_scripts": [
-            "solitude=solitude.cli.main:main"]
+            "solitude=solitude._commandline.main:main"]
     }
 )
 

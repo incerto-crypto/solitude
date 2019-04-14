@@ -28,12 +28,13 @@ class TestingContext:
 
         endpoint = None
 
-        if self._factory.have_tool("Solc"):
+        project_tools = self._factory.get_required()
+        if "Solc" in project_tools:
             self.compiler = self._factory.create_compiler()
 
-        if self._factory.have_tool("GanacheCli"):
+        if "GanacheCli" in project_tools:
             self.server = self._factory.create_server()
-            if self._cfg["Testing.StartServer"]:
+            if self._cfg["Testing.RunServer"]:
                 self.server.start()
                 self._server_started = True
                 # ovverride endpoint for client

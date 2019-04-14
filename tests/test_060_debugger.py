@@ -8,10 +8,12 @@ import re
 from collections import namedtuple
 from solitude.common import ContractSourceList
 from solitude.server import RPCTestServer, kill_all_servers  # noqa
-from solitude.client import ETHClient, ContractBase, DebugTracer  # noqa
+from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
-from solitude.cli.debug import InteractiveDebuggerOUI, InteractiveDebuggerCLI
-from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION  # noqa
+
+from solitude.debugger import EvmTrace, InteractiveDebuggerOI
+from solitude._commandline.cmd_debug import InteractiveDebuggerCLI
+from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
 from io import StringIO
 
 
@@ -20,7 +22,6 @@ def onecmd(debugger, buf, line):
     debugger.onecmd(line)
     buf.seek(pos)
     out = buf.read()
-    print(out)
     return out
 
 
@@ -47,14 +48,14 @@ def reference_fib(n, depth=1):
 
 def test_0001_fib(sol: SOL):
 
-    with sol.account("attila"):
+    with sol.account(ATTILA):
         Fibonacci = sol.deploy(
             "Fibonacci", args=(), wrapper=IFibonacci)
 
-    debugger = DebugTracer(sol.client.rpc, sol.client.compiled)
+    debugger = EvmTrace(sol.client.rpc, sol.client.compiled)
 
     for value in (7, 10):
-        with sol.account("attila"):
+        with sol.account(ATTILA):
             tx = Fibonacci.fib(value)
         reference = reference_fib(value)
         result = Fibonacci.result
@@ -71,11 +72,11 @@ def test_0001_fib(sol: SOL):
 
 
 def test_0002_interactive(sol: SOL):
-    with sol.account("attila"):
+    with sol.account(ATTILA):
         Fibonacci = sol.deploy(
             "Fibonacci", args=(), wrapper=IFibonacci)
 
-    with sol.account("attila"):
+    with sol.account(ATTILA):
         tx = Fibonacci.fib(7)
 
     LINE10_BP = "TestContract:10"
@@ -84,7 +85,7 @@ def test_0002_interactive(sol: SOL):
     fn_template = r"{name}\(\s*uint256\s+{argname}\s*=\s*{argval}\s*\)"
 
     buf = StringIO()
-    debugger = InteractiveDebuggerCLI(InteractiveDebuggerOUI(tx.txhash, sol.client), stdout=buf)
+    debugger = InteractiveDebuggerCLI(InteractiveDebuggerOI(tx.txhash, sol.client), stdout=buf)
 
     # debugger.oui.dbg._dbg._contracts
 

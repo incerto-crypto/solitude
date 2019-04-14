@@ -19,7 +19,7 @@ with warnings.catch_warnings():  # noqa
     from web3.utils.events import get_event_data
     import web3.contract
 
-from solitude.errors import AccountError, SetupError
+from solitude.common.errors import SetupError
 from solitude.common import (
     ContractObjectList, TransactionInfo, hex_repr, Dump)
 
@@ -65,7 +65,7 @@ class AccountContext:
         try:
             return self._account_stack[-1]
         except IndexError:
-            raise AccountError("No account in current scope")
+            value_assert(False, "No account in current scope")
 
 
 class AccountWithStatement:
@@ -102,7 +102,7 @@ ZERO_ADDRESS = hex_repr(b"", pad=20, prefix=True)
 
 
 class ETHClient(AccountContext, EventCaptureContext):
-    def __init__(self, endpoint: str, compiled: ContractObjectList, dump: Dump=None):
+    def __init__(self, endpoint: str, dump: Dump=None):
         super().__init__()
         self._endpoint = endpoint
         self._web3 = Web3(Web3.HTTPProvider(self._endpoint))
@@ -112,7 +112,8 @@ class ETHClient(AccountContext, EventCaptureContext):
         if self._dump is None:
             self._dump = Dump(fileobj=None)
 
-        self._default_gas = 1000000
+        self._default_gaslimit = None
+        self._default_gasprice = None
 
         # accounts
         self._account_aliases = {}  # type: Dict[str, int]
@@ -124,7 +125,6 @@ class ETHClient(AccountContext, EventCaptureContext):
         self._event_logs = []  # type: List[EventLog]
         self._event_map = {}  # type: Dict[Tuple[str, bytes], EventAbi]
         self._filters = []  # type: List[Filter]
-        self.update_contracts(compiled)
 
     def update_contracts(self, compiled: ContractObjectList):
         self._compiled.update(compiled)
@@ -150,13 +150,11 @@ class ETHClient(AccountContext, EventCaptureContext):
     def _reload_accounts(self):
         self._accounts = list(self._web3.eth.accounts)
 
-    def set_default_gas(self, gas: int):
-        self._default_gas = gas
+    def set_default_gaslimit(self, gas: Optional[int]):
+        self._default_gaslimit = gas
 
-    def set_account_alias(self, name: str, account_num: int):
-        if name.startswith("0x"):
-            raise SetupError("Account alias cannot start with 0x: '%s'" % name)
-        self._account_aliases[name] = account_num
+    def set_default_gasprice(self, gasprice: Optional[int]):
+        self._default_gasprice = gasprice
 
     def get_accounts(self):
         return self._accounts[:]
@@ -255,7 +253,7 @@ class ETHClient(AccountContext, EventCaptureContext):
             elif name is None:
                 return ZERO_ADDRESS
         except (IndexError, KeyError):
-            raise AccountError("%s" % repr(name))
+            value_assert(False, "%s is not a valid account" % repr(name))
 
     def _push_account(self, name: Union[str, int]):
         super()._push_account(name)
@@ -265,7 +263,7 @@ class ETHClient(AccountContext, EventCaptureContext):
         super()._pop_account()
         try:
             self._web3.eth.defaultAccount = self.get_current_account()
-        except AccountError:
+        except ValueError:
             self._web3.eth.defaultAccount = self._initial_default_account
 
     def _push_filter(self, pattern):

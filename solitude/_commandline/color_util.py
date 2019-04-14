@@ -6,6 +6,8 @@
 import colorama
 from colorama import Style, Fore, Back
 
+from solitude._internal.oi_common_objects import ColorText
+
 COLOR_MAP = {
     "black": Fore.BLACK,
     "red": Fore.RED,
@@ -43,49 +45,22 @@ class Color:
     def wrap(cls, text, color=""):
         if cls._enabled:
             if isinstance(text, ColorText):
-                return text.to_string(colored=True)
+                return render_colortext(text)
             else:
-                return ColorText.wrap(str(text), color)
+                return colorize_text(str(text), color)
         else:
             return str(text)
 
 
-class ColorText:
-    def __init__(self, chunks=None):
-        self._chunks = []
-        if chunks:
-            self._chunks.extend(chunks)
+def colorize_text(text, color):
+    if not color:
+        return text
+    return "".join(COLOR_MAP[c] for c in color.split("+")) + text + Style.RESET_ALL
 
-    @staticmethod
-    def wrap(text, color):
-        if not color:
-            return text
-        return "".join(COLOR_MAP[c] for c in color.split("+")) + text + Style.RESET_ALL
 
-    def append(self, text, color=""):
-        self._chunks.append([text, color])
-
-    def to_string(self, colored=True):
-        out = ""
-        if colored:
-            for text, color in self._chunks:
-                if color:
-                    out += ColorText.wrap(text, color)
-                else:
-                    out += text
+def render_colortext(colortext: ColorText):
+    for text, color in colortext.iter_chunks():
+        if color:
+            out += colorize_text(text, color)
         else:
-            for text, _ in self._chunks:
-                out += text
-        return out
-
-    def __str__(self):
-        return self.to_string(colored=False)
-
-    def to_obj(self):
-        return {
-            "chunks": [c for c in self._chunks]
-        }
-
-    @staticmethod
-    def from_obj(obj):
-        return ColorText(obj["chunks"])
+            out += text

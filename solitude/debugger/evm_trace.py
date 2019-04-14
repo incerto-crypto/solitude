@@ -8,6 +8,7 @@ from collections import namedtuple
 import hashlib
 import binascii
 import bisect
+
 from solitude.client import RPCClient
 from solitude.common import ContractObjectList, hex_repr
 
@@ -27,7 +28,7 @@ CallStackElement = namedtuple("CallStackElement", ["prev", "step"])
 CallStackEvent = namedtuple("CallStackEvent", ["event", "data"])
 
 
-class DebugTracer:
+class EvmTrace:
     def __init__(self, rpc: RPCClient, compiled: ContractObjectList):
         self._rpc = rpc
         self._compiled = compiled

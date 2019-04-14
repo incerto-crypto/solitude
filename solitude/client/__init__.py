@@ -6,10 +6,6 @@
 from solitude.client.eth_client import ETHClient, BatchCaller, Filter, EventLog  # noqa
 from solitude.client.rpc_client import RPCClient  # noqa
 from solitude.client.contract import ContractBase
-from solitude.client.debug_trace import (
-    DebugTracer, TraceStep, SourceMapping, CallStackElement, CallStackEvent)
-from solitude.client.debug_interactive import (
-    Debugger, Function, Frame, Step, Variable)
 
 __all__ = [
     "ETHClient",
@@ -18,7 +14,5 @@ __all__ = [
     "EventLog",
     "RPCClient",
 
-    "DebugTracer", "TraceStep", "SourceMapping", "CallStackElement", "CallStackEvent",
-    "Debugger", "Function", "Frame", "Step", "Variable",
     "ContractBase"
 ]
