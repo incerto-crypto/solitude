@@ -29,6 +29,7 @@ SETUP = lambda: dict(
         "pytest",
         "pystache",
         "colorama",
+        "jinja2",
         "jsonschema"
     ],
     classifiers=[
