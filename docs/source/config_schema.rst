@@ -1,1 +1,1 @@
-.. jsonschema:: ../../solitude/_internal/config_schema.json
+.. jsonschema:: ../../solitude/_internal/resources/config_schema.json

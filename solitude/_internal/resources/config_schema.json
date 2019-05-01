@@ -39,7 +39,7 @@
                 ]
             },
             "description": "List of tools required by your project",
-            "default": "{{DEFAULT_REQUIRED_TOOLS}}"
+            "default": "[{{ DEFAULT_REQUIRED_TOOLS | tojson }}]"
         },
         "Server.Port": {
             "anyOf": [
@@ -59,7 +59,7 @@
                 "type": "string"
             },
             "description": "Initial accounts and balances for the server",
-            "default": ["{{DEFAULT_ACCOUNTS}}"]
+            "default": "[{{ DEFAULT_ACCOUNTS | tojson }}]"
         },
         "Server.BlockTime": {
             "anyOf": [

@@ -5,10 +5,11 @@
 
 import json
 import jinja2
+import re
 
 
 import os
-fname = 'config_schema.json'
+fname = 'resources/config_schema.json'
 
 _file = os.path.abspath(__file__)
 _dir = os.path.dirname(_file)
@@ -54,8 +55,12 @@ DEFAULTS = {
 # TODO enforce more strict schema on strings where possible
 
 with open(SCHEMA_FILENAME) as fschema:
-    template = jinja2.Template(fschema.read())
-    SCHEMA = template.render(**DEFAULTS)
+    raw_template = fschema.read() #"{{ DEFAULT_REQUIRED_TOOLS | tojson }}"
+    raw_template = raw_template.replace('"[{{', '{{')
+    raw_template = raw_template.replace('}}]"', '}}')
+    template = jinja2.Template(raw_template)
+    print(template.render(**DEFAULTS))
+    SCHEMA = json.loads(template.render(**DEFAULTS))
 
 SCHEMA_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
