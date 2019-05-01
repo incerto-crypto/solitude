@@ -1,0 +1,203 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SolitudeConfiguration",
+    "type": "object",
+    "properties": {
+        "Project.Name": {
+            "type": "string",
+            "description": "Your project's name",
+            "default": "MyProject"
+        },
+        "Tools.Directory": {
+            "type": "string",
+            "description": "Path to the directory where the downloaded tools will be installed",
+            "default": "{{DEFAULT_TOOLS_DIR}}"
+        },
+        "Tools.Solc.Version": {
+            "type": "string",
+            "description": "solc (Compiler) required version",
+            "default": "{{ DEFAULT_SOLC_VERSION }}"
+        },
+        "Tools.GanacheCli.Version": {
+            "type": "string",
+            "description": "ganache-cli (Server) required version",
+            "default": "{{DEFAULT_GANACHECLI_VERSION}}"
+        },
+        "Tools.Solium.Version": {
+            "type": "string",
+            "description": "solium (Linter) required version",
+            "default": "{{DEFAULT_SOLIUM_VERSION}}"
+        },
+        "Tools.Required": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Solc",
+                    "GanacheCli",
+                    "Solium"
+                ]
+            },
+            "description": "List of tools required by your project",
+            "default": "{{DEFAULT_REQUIRED_TOOLS}}"
+        },
+        "Server.Port": {
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string"
+                }
+            ],
+            "description": "Port or range of ports on which the server can be started",
+            "default": "{{DEFAULT_RPC_PORT}}"
+        },
+        "Server.Accounts": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Initial accounts and balances for the server",
+            "default": ["{{DEFAULT_ACCOUNTS}}"]
+        },
+        "Server.BlockTime": {
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "description": "Starting block time for the server",
+            "default": null
+        },
+        "Server.Host": {
+            "type": "string",
+            "description": "Host on which to start the server",
+            "default": "127.0.0.1"
+        },
+        "Server.GasPrice": {
+            "type": "integer",
+            "description": "Price of gas for the server",
+            "default": 20000000000
+        },
+        "Server.GasLimit": {
+            "type": "integer",
+            "description": "Gas limit for the server",
+            "default": 6721975
+        },
+        "Testing.StartServer": {
+            "type": "boolean",
+            "description": "Run a server instance on creation of the testing context",
+            "default": true
+        },
+        "Client.Endpoint": {
+            "type": "string",
+            "description": "Endpoint to which the RPC client should connect to",
+            "default": "http://127.0.0.1:%d"
+        },
+        "Client.AccountAliases": {
+            "type": "object",
+            "description": "Friendly names for the accounts from the account storage",
+            "default": {
+                "attila": 0,
+                "george": 1
+            }
+        },
+        "Client.ContractBuildDir": {
+            "type": "string",
+            "description": "Directory where built contracts are found, to get the ABI",
+            "default": "./eth/build"
+        },
+        "Client.GasLogDir": {
+            "type": "string",
+            "description": "Directory where the transaction logs will be stored",
+            "default": "./log"
+        },
+        "Client.EnableGasLog": {
+            "type": "boolean",
+            "description": "Enable transaction logging",
+            "default": false
+        },
+        "Client.DefaultGas": {
+            "type": "integer",
+            "description": "Default amount of gas configured for the client's transactions",
+            "default": 1000000
+        },
+        "Compiler.ContractDir": {
+            "type": "string",
+            "description": "Directories where the contract sources to compile are located",
+            "default": "./eth/contracts"
+        },
+        "Compiler.BuildDir": {
+            "type": "string",
+            "description": "Directory where contracts built by the compiler will be stored",
+            "default": "./eth/build"
+        },
+        "Compiler.Optimize": {
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "description": "Solidity compiler optimize runs, or null for no optimization",
+            "default": null
+        },
+        "Compiler.Lint.Plugins": {
+            "type": "array",
+            "description": "List of plugins solium linter",
+            "items": {
+                "type": "string"
+            },
+            "default": [
+                "security"
+            ]
+        },
+        "Compiler.Lint.Rules": {
+            "type": "object",
+            "description": "Rules (configuration) for solium linter",
+            "default": {
+                "quotes": [
+                    "error",
+                    "double"
+                ],
+                "indentation": [
+                    "error",
+                    4
+                ]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "Project.Name",
+        "Tools.Directory",
+        "Tools.Solc.Version",
+        "Tools.GanacheCli.Version",
+        "Tools.Solium.Version",
+        "Tools.Required",
+        "Server.Port",
+        "Server.Accounts",
+        "Server.BlockTime",
+        "Server.Host",
+        "Server.GasPrice",
+        "Server.GasLimit",
+        "Testing.StartServer",
+        "Client.Endpoint",
+        "Client.AccountAliases",
+        "Client.ContractBuildDir",
+        "Client.GasLogDir",
+        "Client.EnableGasLog",
+        "Client.DefaultGas",
+        "Compiler.ContractDir",
+        "Compiler.BuildDir",
+        "Compiler.Optimize",
+        "Compiler.Lint.Plugins",
+        "Compiler.Lint.Rules"
+    ]
+}

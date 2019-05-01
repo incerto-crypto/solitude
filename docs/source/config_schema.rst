@@ -1,0 +1,1 @@
+.. jsonschema:: ../../solitude/_internal/config_schema.json
