@@ -5,6 +5,7 @@
 
 import os
 import hashlib
+import json
 from typing import List, Tuple, Dict, Optional  # noqa
 from solitude._internal import type_assert, value_assert, RaiseForParam
 
@@ -70,7 +71,7 @@ class ContractObjectList:
         with RaiseForParam("contractname"):
             type_assert(contractname, str)
         out = []
-        units = self._name_to_units.get(contractname)
+        units = self._name_to_units.get(contractname, [])
         for unit in units:
             if suffix is None or unit.endswith(suffix):
                 out.append((unit, contractname))

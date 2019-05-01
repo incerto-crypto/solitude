@@ -1,5 +1,5 @@
 {
-  "name": "Solium-solitude-env",
+  "name": "EthLint-solitude-env",
   "version": "1.0.0",
   "lockfileVersion": 1,
   "requires": true,
@@ -58,9 +58,9 @@
       "integrity": "sha1-WWZ/QfrdTyDMvCu5a41Pf3jsA2c="
     },
     "async-each": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/async-each/-/async-each-1.0.2.tgz",
-      "integrity": "sha512-6xrbvN0MOBKSJDdonmSSz2OwFSgxRaVtBDes26mj9KIGtDo+g9xosFRSC+i1gQh2oAN/tQ62AI/pGZGQjVOiRg=="
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/async-each/-/async-each-1.0.3.tgz",
+      "integrity": "sha512-z/WhQ5FPySLdvREByI2vZiTWwCnF0moMJ1hK9YQwDTHKh6I7/uSckMetoRGb5UBZPC1z0jlw+n/XCgjeH7y1AQ=="
     },
     "atob": {
       "version": "2.1.2",
@@ -271,9 +271,9 @@
       "integrity": "sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ=="
     },
     "component-emitter": {
-      "version": "1.2.1",
-      "resolved": "https://registry.npmjs.org/component-emitter/-/component-emitter-1.2.1.tgz",
-      "integrity": "sha1-E3kY1teCg/ffemt8WmPhQOaUJeY="
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/component-emitter/-/component-emitter-1.3.0.tgz",
+      "integrity": "sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg=="
     },
     "concat-map": {
       "version": "0.0.1",
@@ -366,14 +366,39 @@
       }
     },
     "diff": {
-      "version": "3.3.1",
-      "resolved": "https://registry.npmjs.org/diff/-/diff-3.3.1.tgz",
-      "integrity": "sha512-MKPHZDMB0o6yHyDryUOScqZibp914ksXwAMYMTHj6KO8UeKsRYNJD3oNCKjTqZon+V488P7N/HzXF8t7ZR95ww=="
+      "version": "3.5.0",
+      "resolved": "https://registry.npmjs.org/diff/-/diff-3.5.0.tgz",
+      "integrity": "sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA=="
+    },
+    "eol": {
+      "version": "0.9.1",
+      "resolved": "https://registry.npmjs.org/eol/-/eol-0.9.1.tgz",
+      "integrity": "sha512-Ds/TEoZjwggRoz/Q2O7SE3i4Jm66mqTDfmdHdq/7DKVk3bro9Q8h6WdXKdPqFLMoqxrDK5SVRzHVPOS6uuGtrg=="
     },
     "escape-string-regexp": {
       "version": "1.0.5",
       "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz",
       "integrity": "sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ="
+    },
+    "ethlint": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/ethlint/-/ethlint-1.2.1.tgz",
+      "integrity": "sha512-6vk97mwOt44rG00vd4M13eyTt0Qy7NuN3nCjQp9X7G5z540Yw3gK4i0tI9wp9rpM7SJrH97h+LP7FagoWVH7RQ==",
+      "requires": {
+        "ajv": "^5.2.2",
+        "chokidar": "^1.6.0",
+        "colors": "^1.1.2",
+        "commander": "^2.9.0",
+        "diff": "^3.5.0",
+        "eol": "^0.9.1",
+        "js-string-escape": "^1.0.1",
+        "lodash": "^4.14.2",
+        "sol-digger": "0.0.2",
+        "sol-explore": "1.6.1",
+        "solium-plugin-security": "0.1.1",
+        "solparse": "2.2.7",
+        "text-table": "^0.2.0"
+      }
     },
     "execa": {
       "version": "0.7.0",
@@ -494,13 +519,13 @@
       "integrity": "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
     },
     "fsevents": {
-      "version": "1.2.7",
-      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.2.7.tgz",
-      "integrity": "sha512-Pxm6sI2MeBD7RdD12RYsqaP0nMiwx8eZBXCa6z2L+mRHm2DYrOYwihmhjpkdjUHwQhslWQjRpEgNq4XvBmaAuw==",
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.2.8.tgz",
+      "integrity": "sha512-tPvHgPGB7m40CZ68xqFGkKuzN+RnpGmSV+hgeKxhRpbxdqKXUFJGC3yonBOLzQBcJyGpdZFDfCsdOC2KFsXzeA==",
       "optional": true,
       "requires": {
-        "nan": "^2.9.2",
-        "node-pre-gyp": "^0.10.0"
+        "nan": "^2.12.1",
+        "node-pre-gyp": "^0.12.0"
       },
       "dependencies": {
         "abbrev": {
@@ -567,11 +592,11 @@
           "optional": true
         },
         "debug": {
-          "version": "2.6.9",
+          "version": "4.1.1",
           "bundled": true,
           "optional": true,
           "requires": {
-            "ms": "2.0.0"
+            "ms": "^2.1.1"
           }
         },
         "deep-extend": {
@@ -722,22 +747,22 @@
           }
         },
         "ms": {
-          "version": "2.0.0",
+          "version": "2.1.1",
           "bundled": true,
           "optional": true
         },
         "needle": {
-          "version": "2.2.4",
+          "version": "2.3.0",
           "bundled": true,
           "optional": true,
           "requires": {
-            "debug": "^2.1.2",
+            "debug": "^4.1.0",
             "iconv-lite": "^0.4.4",
             "sax": "^1.2.4"
           }
         },
         "node-pre-gyp": {
-          "version": "0.10.3",
+          "version": "0.12.0",
           "bundled": true,
           "optional": true,
           "requires": {
@@ -763,12 +788,12 @@
           }
         },
         "npm-bundled": {
-          "version": "1.0.5",
+          "version": "1.0.6",
           "bundled": true,
           "optional": true
         },
         "npm-packlist": {
-          "version": "1.2.0",
+          "version": "1.4.1",
           "bundled": true,
           "optional": true,
           "requires": {
@@ -890,7 +915,7 @@
           "optional": true
         },
         "semver": {
-          "version": "5.6.0",
+          "version": "5.7.0",
           "bundled": true,
           "optional": true
         },
@@ -1424,6 +1449,11 @@
           "requires": {
             "ms": "2.0.0"
           }
+        },
+        "diff": {
+          "version": "3.3.1",
+          "resolved": "https://registry.npmjs.org/diff/-/diff-3.3.1.tgz",
+          "integrity": "sha512-MKPHZDMB0o6yHyDryUOScqZibp914ksXwAMYMTHj6KO8UeKsRYNJD3oNCKjTqZon+V488P7N/HzXF8t7ZR95ww=="
         }
       }
     },
@@ -2165,33 +2195,15 @@
       "resolved": "https://registry.npmjs.org/sol-explore/-/sol-explore-1.6.1.tgz",
       "integrity": "sha1-tZ8HPGn+MyVg1aEMMrqMp/KYbPs="
     },
-    "solium": {
-      "version": "1.1.2",
-      "resolved": "https://registry.npmjs.org/solium/-/solium-1.1.2.tgz",
-      "integrity": "sha512-2CvpbiU0msntDkK+X6y3qCcRqg+W7Bf237BrHPTP32zufK7OCaINK4ci7UEMnusbEW41njJwLitN0h32C3rVKA==",
-      "requires": {
-        "ajv": "^5.2.2",
-        "chokidar": "^1.6.0",
-        "colors": "^1.1.2",
-        "commander": "^2.9.0",
-        "js-string-escape": "^1.0.1",
-        "lodash": "^4.14.2",
-        "sol-digger": "0.0.2",
-        "sol-explore": "1.6.1",
-        "solium-plugin-security": "0.1.1",
-        "solparse": "2.2.2",
-        "text-table": "^0.2.0"
-      }
-    },
     "solium-plugin-security": {
       "version": "0.1.1",
       "resolved": "https://registry.npmjs.org/solium-plugin-security/-/solium-plugin-security-0.1.1.tgz",
       "integrity": "sha512-kpLirBwIq4mhxk0Y/nn5cQ6qdJTI+U1LO3gpoNIcqNaW+sI058moXBe2UiHs+9wvF9IzYD49jcKhFTxcR9u9SQ=="
     },
     "solparse": {
-      "version": "2.2.2",
-      "resolved": "https://registry.npmjs.org/solparse/-/solparse-2.2.2.tgz",
-      "integrity": "sha512-TKX0Foi/N73nKco65+boo0YTtifFVEEXEPQkN4b1GkkEsXLXyV1TnvvIeT0qg9lEPLdi4Ri5WUWYVJipnSny+Q==",
+      "version": "2.2.7",
+      "resolved": "https://registry.npmjs.org/solparse/-/solparse-2.2.7.tgz",
+      "integrity": "sha512-s2DKdvVxXcWefPgBSb+HgTylomzbNjsKdZDN6PsWi9h+UYdyw7DFozpPCGETNEz523tIjrqBRnSPIoDVL1zv5Q==",
       "requires": {
         "mocha": "^4.0.1",
         "pegjs": "^0.10.0",

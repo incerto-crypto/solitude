@@ -126,6 +126,7 @@ class RPCTestServer:
 
         cmd = [
             self._executable,
+            "-v",
             "--host", self._host,
             "--port", str(self._port),
             "--noVMErrorsOnRPCResponse"]
@@ -192,7 +193,8 @@ class RPCTestServer:
             os.kill(self._pid, signal.SIGKILL)
             self._thread.join(timeout=timeout)
         except OSError as err:
-            print(str(err), file=sys.stderr)
+            # print(str(err), file=sys.stderr)
+            pass
 
     def stop(self, timeout: float=15.0) -> None:
         """Terminate (SIGTERM) the ganache-cli process and wait. If this fails,

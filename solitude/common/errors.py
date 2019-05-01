@@ -30,12 +30,12 @@ class TransactionError(RequestError):
             message: str,
             info: TransactionInfo):
         super().__init__(
-            "Transaction Error in %s:%s.%s. %s. debug with txhash: %s" % (
+            "Transaction Error in %s:%s.%s. %s. txhash: %s" % (
                 info.unitname,
                 info.contractname,
                 info.function,
                 message,
-                hex_repr(info.txhash)))
+                hex_repr(info.txhash) if info.txhash is not None else "None"))
         self.info = info
 
 

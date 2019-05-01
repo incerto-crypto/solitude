@@ -3,7 +3,10 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
+import pytest
 import os
+
+pytestmark = [pytest.mark.base, pytest.mark.internal]
 
 
 def test_0001_resources():

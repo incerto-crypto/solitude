@@ -7,16 +7,16 @@ from solitude.tools.base import ToolNpmTemplate
 from solitude.common.resource_util import get_global_config
 
 
-class Solium(ToolNpmTemplate):
+class EthLint(ToolNpmTemplate):
     def __init__(self, tooldir: str, version: str):
-        lockfile = get_global_config()["Solium.PackageLock"]
+        lockfile = get_global_config()["EthLint.PackageLock"]
         if lockfile is not None:
             lockfile = lockfile.format(version=version)
         super().__init__(
             tooldir=tooldir,
-            name="Solium",
+            name="EthLint",
             version=version,
             provides="solium",
-            package="solium",
+            package="ethlint",
             executable="solium",
             lockfile=lockfile)

@@ -15,6 +15,7 @@ from solitude.common.config_util import (
 
 from solitude.common.contract_objectlist import ContractObjectList
 from solitude.common.contract_sourcelist import ContractSourceList
+from solitude.common.contract_util import path_to_unitname
 from solitude.common.dump import Dump
 
 
@@ -37,6 +38,7 @@ __all__ = [
 
     "ContractObjectList",
     "ContractSourceList",
+    "path_to_unitname",
 
     "Dump"
 ]

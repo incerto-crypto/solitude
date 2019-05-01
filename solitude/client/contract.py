@@ -106,6 +106,11 @@ class ContractBase:
         txhash = None
         receipt = None
         try:
+            # TODO if gas is not defined, web3 will automatically call estimateGas. In this case,
+            #  when estimateGas fails, the transaction will fail without a TXHASH.
+            # Instead of letting web3 call estimateGas, call it explicitly and return a different
+            #   error in case estimateGas fails, explaining that the user should provide a
+            #   gas value in order to obtain a txhash to debug.
             txhash = getattr(self._contract.functions, func)(*args).transact(txargs)
             receipt = self._client.web3.eth.waitForTransactionReceipt(txhash)
             info = TransactionInfo(
@@ -127,7 +132,8 @@ class ContractBase:
             raise TransactionError(
                 message=str(e),
                 info=TransactionInfo(
-                    contract=self._contractname,
+                    unitname=self._unitname,
+                    contractname=self._contractname,
                     address=self._contract.address,
                     function=func,
                     fnargs=args,

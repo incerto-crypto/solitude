@@ -10,6 +10,8 @@ from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
 from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
 
+pytestmark = [pytest.mark.base, pytest.mark.testing]
+
 
 @pytest.fixture(scope="module", autouse=True)
 def contracts(sol: SOL):

@@ -5,8 +5,8 @@
 
 import sys
 from solitude import Factory
-from solitude.errors import CLIError
-from solitude.common import ContractSourceList
+from solitude.common.errors import CLIError, CompilerError
+from solitude.common import ContractSourceList, read_config_file, file_message_format
 
 
 def main(args):

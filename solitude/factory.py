@@ -10,7 +10,7 @@ from solitude.errors import SetupError
 
 class ToolsManager:
     def __init__(self, cfg: dict):
-        from solitude.tools import Tool, GanacheCli, Solc, Solium
+        from solitude.tools import Tool, GanacheCli, Solc, EthLint
         self._cfg = cfg
         self._tooldir = parse_path(self._cfg["Tools.Directory"])
         self._tools = {tool_name: None for tool_name in self._cfg["Tools.Required"]}
@@ -20,7 +20,7 @@ class ToolsManager:
         self._create_tool_if_required(
             "GanacheCli", GanacheCli, "Tools.GanacheCli.Version")
         self._create_tool_if_required(
-            "Solium", Solium, "Tools.Solium.Version")
+            "EthLint", EthLint, "Tools.EthLint.Version")
 
     def _create_tool_if_required(self, tool_name, tool_class, tool_version_field):
         if tool_name in self._tools:
@@ -103,9 +103,9 @@ class Factory:
         """
         from solitude.linter import Linter
         linter = Linter(
-            executable=self._tools["Solium"].get("solium"),
-            plugins=self._cfg["Compiler.Lint.Plugins"],
-            rules=self._cfg["Compiler.Lint.Rules"])
+            executable=self._tools.get("EthLint").get("solium"),
+            plugins=self._cfg["Linter.Plugins"],
+            rules=self._cfg["Linter.Rules"])
         return linter
 
     def get_sourcelist(self) -> "ContractSourceList":

@@ -16,6 +16,8 @@ from solitude._commandline.cmd_debug import InteractiveDebuggerCLI
 from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
 from io import StringIO
 
+pytestmark = [pytest.mark.base, pytest.mark.debugger]
+
 
 def onecmd(debugger, buf, line):
     pos = buf.tell()

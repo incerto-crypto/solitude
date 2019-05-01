@@ -16,6 +16,8 @@ from solitude.client import ETHClient, BatchCaller, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
 
+pytestmark = [pytest.mark.base, pytest.mark.client]
+
 
 PRAGMA = "pragma solidity ^{solidity_version};\n".format(
     solidity_version=SOLIDITY_VERSION)

@@ -11,7 +11,7 @@ import datetime
 import os
 import sys
 from solitude.errors import CompilerError
-from solitude.common import FileMessage
+from solitude.common import FileMessage, path_to_unitname
 from solitude._internal import (
     EnumType, RaiseForParam, isfile_assert, value_assert, type_assert)
 
@@ -238,17 +238,6 @@ def _make_output_selection_dict(outputs: List[str]) -> dict:
     }
 
 
-def _make_unitname(path: str):
-    # solc does not accept r"\" in source unit names
-    # C:\path\to\file.sol -> /C/path/to/file.sol
-    if sys.platform == "win32":
-        path = path.replace("\\", "/")
-        if path[1] == ":":
-            path = "/" + path[0] + path[2:]
-        return path
-    return path
-
-
 class _SolcStandardJsonInput:
     def __init__(self):
         self._language = "Solidity"
@@ -282,7 +271,7 @@ class _SolcStandardJsonInput:
         self._settings["evmVersion"] = evm_version
 
     def add_source_from_file(self, path) -> str:
-        unitname = _make_unitname(path)
+        unitname = path_to_unitname(path)
         with open(path, "r") as fp:
             contents = fp.read()
         self.add_source(unitname, contents)

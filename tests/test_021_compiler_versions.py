@@ -12,6 +12,8 @@ from solitude.errors import CompilerError
 from conftest import tooldir, SOLIDITY_ALL_VERSIONS  # noqa
 from distutils.version import StrictVersion
 
+pytestmark = [pytest.mark.versions, pytest.mark.compiler]
+
 
 # test for each solc version
 @pytest.fixture(scope="module", params=SOLIDITY_ALL_VERSIONS)
@@ -22,7 +24,8 @@ def tool_solc(request, tooldir):
     yield tool
 
 
-@pytest.mark.internet
+@pytest.mark.require_local_tools
+@pytest.mark.versions
 def test_0001_compile_string(tool_solc):
     sources = ContractSourceList()
     compiler = Compiler(executable=tool_solc.get("solc"))

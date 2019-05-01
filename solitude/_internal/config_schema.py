@@ -5,7 +5,7 @@
 
 DEFAULT_SOLC_VERSION = "0.5.2"
 DEFAULT_GANACHECLI_VERSION = "6.4.1"
-DEFAULT_SOLIUM_VERSION = "1.2.3"
+DEFAULT_ETHLINT_VERSION = "1.2.4"
 DEFAULT_TOOLS_DIR = "~/.solitude-dev"
 DEFAULT_REQUIRED_TOOLS = ["Solc", "GanacheCli"]
 DEFAULT_RPC_PORT = 8545
@@ -77,16 +77,16 @@ SCHEMA = {
             "description": "ganache-cli (Server) required version",
             "default": DEFAULT_GANACHECLI_VERSION
         },
-        "Tools.Solium.Version": {
+        "Tools.EthLint.Version": {
             "type": "string",
-            "description": "solium (Linter) required version",
-            "default": DEFAULT_SOLIUM_VERSION
+            "description": "ethlint (Linter) required version",
+            "default": DEFAULT_ETHLINT_VERSION
         },
         "Tools.Required": {
             "type": "array",
             "items": {
                 "type": "string",
-                "enum": ["Solc", "GanacheCli", "Solium"]
+                "enum": ["Solc", "GanacheCli", "EthLint"]
             },
             "description": "List of tools required by your project",
             "default": DEFAULT_REQUIRED_TOOLS
@@ -142,7 +142,7 @@ SCHEMA = {
                 {"type": "null"}
             ],
             "description": "Default gas price for transactions",
-            "default": None
+            "default": 20000000000
         },
         "Client.GasLimit": {
             "anyOf": [
@@ -150,7 +150,7 @@ SCHEMA = {
                 {"type": "null"}
             ],
             "description": "Default gas limit for the transactions",
-            "default": None
+            "default": 6721975
         },
 
         # Compiler
@@ -165,7 +165,7 @@ SCHEMA = {
 
         "Linter.Plugins": {
             "type": "array",
-            "description": "List of plugins solium linter",
+            "description": "List of plugins for ethlint linter",
             "items": {
                 "type": "string"
             },
@@ -173,7 +173,7 @@ SCHEMA = {
         },
         "Linter.Rules": {
             "type": "object",
-            "description": "Rules (configuration) for solium linter",
+            "description": "Rules (configuration) for ethlint linter",
             "default": {
                 "quotes": ["error", "double"],
                 "indentation": ["error", 4]
@@ -207,7 +207,7 @@ SCHEMA = {
         "Tools.Directory",
         "Tools.Solc.Version",
         "Tools.GanacheCli.Version",
-        "Tools.Solium.Version",
+        "Tools.EthLint.Version",
         "Tools.Required",
 
         "Server.Port",

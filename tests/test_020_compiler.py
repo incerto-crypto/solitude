@@ -10,6 +10,8 @@ from solitude.compiler import Compiler
 from solitude.errors import CompilerError
 from conftest import tooldir, tmpdir, tool_solc, SOLIDITY_VERSION  # noqa
 
+pytestmark = [pytest.mark.base, pytest.mark.compiler]
+
 
 def find_line(text, needle):
     for i, line in enumerate(text.split("\n")):

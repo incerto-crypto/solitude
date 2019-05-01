@@ -4,7 +4,7 @@
 # COPYING file in the root directory of this source tree
 
 from solitude.errors import CLIError
-from solitude.tools import Solc, Solium, GanacheCli
+from solitude.tools import Solc, EthLint, GanacheCli
 
 
 def _iter_required_tools(cfg):
@@ -14,8 +14,8 @@ def _iter_required_tools(cfg):
         yield Solc(tooldir, cfg["Tools.Solc.Version"])
     if "GanacheCli" in required:
         yield GanacheCli(tooldir, cfg["Tools.GanacheCli.Version"])
-    if "Solium" in required:
-        yield Solium(tooldir, cfg["Tools.Solium.Version"])
+    if "EthLint" in required:
+        yield EthLint(tooldir, cfg["Tools.EthLint.Version"])
 
 
 def _install_if_not_have(tool):

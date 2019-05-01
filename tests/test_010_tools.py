@@ -3,11 +3,14 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
+import pytest
 import re
 import subprocess
-from solitude.tools import Solc, GanacheCli, Solium
+from solitude.tools import Solc, GanacheCli, EthLint
 from conftest import (  # noqa
-    tooldir, SOLIDITY_VERSION, GANACHE_VERSION, SOLIUM_VERSION)
+    tooldir, SOLIDITY_VERSION, GANACHE_VERSION, ETHLINT_VERSION)
+
+pytestmark = [pytest.mark.base, pytest.mark.tools]
 
 
 def assertOutputContainsVersion(output, version, index=0):
@@ -36,10 +39,10 @@ def test_0002_install_ganache(tooldir):
     assertOutputContainsVersion(output, GANACHE_VERSION, index=-1)
 
 
-def test_0003_install_solium(tooldir):
-    solium = Solium(tooldir, version=SOLIUM_VERSION)
-    if not solium.have():
-        solium.add()
+def test_0003_install_ethlint(tooldir):
+    ethlint = EthLint(tooldir, version=ETHLINT_VERSION)
+    if not ethlint.have():
+        ethlint.add()
     output = subprocess.check_output(
-        [solium.get("solium"), "--version"])
-    assertOutputContainsVersion(output, SOLIUM_VERSION, index=-1)
+        [ethlint.get("solium"), "--version"])
+    assertOutputContainsVersion(output, ETHLINT_VERSION, index=-1)

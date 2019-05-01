@@ -7,26 +7,34 @@ from typing import List, Union, Iterator, Tuple  # noqa
 from collections import OrderedDict
 
 from solitude.common import (
-    ContractSourceList, FileMessage)
+    ContractSourceList, FileMessage, path_to_unitname)
 
-from solitude.compiler.solium_wrapper import SoliumWrapper
+from multiprocessing.pool import ThreadPool
+from solitude.linter.solium_wrapper import SoliumWrapper
 
 
 class Linter:
-    def __init__(self, executable: str, plugins: List[str], rules: Union[dict, OrderedDict]):
-        super().__init__()
-        self._executable = executable
+    def __init__(
+            self,
+            executable: str,
+            plugins: List[str],
+            rules: Union[dict, OrderedDict],
+            parallelism: int=4):
         self._solium = SoliumWrapper(executable, plugins, rules)
+        self._parallelism = parallelism
 
-    def lint_iter(self, sourcelist: ContractSourceList) -> Iterator[Tuple[str, FileMessage]]:
-        try:
-            for path in self._file_sources:
-                yield path, self._solium.lint_file(path)
-            for source_name, source in self._text_sources:
-                filename = "source#" + source_name
-                yield filename, self._solium.lint_source(source, filename)
-        finally:
-            self._clear_sources()
+    def lint(self, sourcelist: ContractSourceList) -> Iterator[Tuple[str, FileMessage]]:
+        pool = ThreadPool(processes=self._parallelism)
+        futures = []
 
-    def lint(self, sourcelist: ContractSourceList) -> List[Tuple[str, FileMessage]]:
-        return list(self.lint_iter(sourcelist))
+        for path in sourcelist.file_sources:
+            futures.append(
+                pool.apply_async(self._solium.lint_file, args=(path, )))
+        for unitname, source in sourcelist.text_sources.items():
+            futures.append(
+                pool.apply_async(self._solium.lint_source, args=(source, unitname)))
+
+        for future in futures:
+            errors = future.get()
+            for error in errors:
+                yield error

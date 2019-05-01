@@ -3,19 +3,25 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-from typing import List, Union  # noqa
+from typing import List, Union, Optional  # noqa
 from collections import OrderedDict
 import os
 import json
 import subprocess
 import re
-from solitude.common import FileMessage
+from solitude._internal import internal_assert
+from solitude.common import FileMessage, path_to_unitname
 
 
 class SoliumWrapper:
-    def __init__(self, executable: str, plugins: List[str], rules: Union[dict, OrderedDict]):
+    def __init__(
+            self,
+            executable: str,
+            plugins: List[str],
+            rules: Union[dict, OrderedDict]):
         self._executable = executable
         self._args = [
+            executable,
             "--no-soliumrc",
             "--no-soliumignore",
             "--reporter", "gcc"]
@@ -28,14 +34,21 @@ class SoliumWrapper:
                 "--rule",
                 "%s: %s" % (key, json.dumps(value))])
 
-    def lint_source(self, source: str, name: str="<stdin>"):
-        return self._lint(stdin=source, stdin_alias=name)
+    def lint_source(self, source: str, unitname: str="<stdin>"):
+        return self._lint(
+            unitname=unitname,
+            stdin=source)
 
     def lint_file(self, filename: str):
-        return self._lint(filename=os.path.abspath(filename))
+        filename = os.path.abspath(filename)
+        return self._lint(
+            unitname=path_to_unitname(filename),
+            filename=filename)
 
-    def _lint(self, filename: str=None, stdin=None, stdin_alias="<stdin>") -> List[FileMessage]:
-        assert not (filename is not None and stdin is not None)
+    def _lint(self, unitname: str, filename: str=None, stdin=None) -> List[FileMessage]:
+        internal_assert(
+            sum(int(x is not None) for x in [filename, stdin]) == 1,
+            "Exactly one of 'filename' and 'stdin' must not be None")
 
         stdin_data = None
         if filename is not None:
@@ -46,18 +59,18 @@ class SoliumWrapper:
             cmd = self._args + ["--stdin"]
             stdin_data = stdin.encode('utf-8')
 
-        # TODO solium is slow!
-
         p = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         out, err = p.communicate(stdin_data)
-        return _decode_linter_output(out.decode('utf-8'), stdin_alias=stdin_alias)
+        return _decode_linter_output(
+            out.decode('utf-8'),
+            unitname=unitname)
 
 
-def _decode_linter_output(out, stdin_alias: str) -> List[FileMessage]:
+def _decode_linter_output(out, unitname: Optional[str]=None) -> List[FileMessage]:
     errors = []
     pos_regex = re.compile(r"^(.+):([0-9]+):([0-9]+):\s*([^:\s]+)\s*:")
     for line in out.split("\n"):
@@ -65,9 +78,10 @@ def _decode_linter_output(out, stdin_alias: str) -> List[FileMessage]:
         if m is not None:
             try:
                 err_msg = line[m.span(0)[1]:].strip()
-                err_file = m.group(1)
-                if err_file == "<stdin>":
-                    err_file = stdin_alias
+                if unitname is not None:
+                    err_file = unitname
+                else:
+                    err_file = m.group(1)
                 err_line = int(m.group(2))
                 err_col = int(m.group(3))
                 err_type = m.group(4).lower()

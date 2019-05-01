@@ -11,6 +11,7 @@ from collections import OrderedDict
 
 from solitude.server import RPCTestServer, kill_all_servers  # noqa
 from solitude.client import ContractBase, ETHClient, EventLog  # noqa
+from solitude.common import ContractObjectList
 from solitude.compiler import Compiler  # noqa
 from solitude import Factory, read_config_file
 
@@ -42,6 +43,12 @@ class TestingContext:
 
         self.client = self._factory.create_client(
             endpoint=endpoint)
+
+        object_dir = self._cfg["Project.ObjectDir"]
+        if object_dir is not None:
+            objects = ContractObjectList()
+            objects.add_directory(object_dir)
+            self.client.update_contracts(objects)
 
     @property
     def cfg(self):

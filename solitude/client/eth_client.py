@@ -40,7 +40,6 @@ class EventCaptureContext:
 
     def _check_filters(self, text: str):
         for flt in self._event_filter_stack:
-            print("FLT %s %s" % (repr(flt), repr(text)))
             if isinstance(flt, str):
                 if fnmatch.fnmatch(text, flt):
                     return True

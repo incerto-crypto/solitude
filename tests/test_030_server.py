@@ -12,6 +12,8 @@ from solitude.client import ETHClient, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
 
+pytestmark = [pytest.mark.base, pytest.mark.server]
+
 
 @pytest.fixture(scope="function")
 def server(tool_ganache):

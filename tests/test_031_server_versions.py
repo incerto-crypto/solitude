@@ -8,6 +8,8 @@ from solitude.tools import GanacheCli
 from conftest import (  # noqa
     tooldir, tool_solc, SOLIDITY_VERSION, GANACHE_ALL_VERSIONS)
 
+pytestmark = [pytest.mark.versions, pytest.mark.server]
+
 
 # test for each ganache version
 @pytest.fixture(scope="module", params=GANACHE_ALL_VERSIONS)
@@ -28,7 +30,7 @@ def server(tool_ganache):
     kill_all_servers()
 
 
-@pytest.mark.internet
+@pytest.mark.require_local_tools
 def test_0001_pay(server: RPCTestServer, tool_solc):
     CONTRACT_NAME = "TestContract"
 

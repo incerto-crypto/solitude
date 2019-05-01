@@ -6,12 +6,12 @@
 from solitude.tools.base import Tool
 from solitude.tools.solc import Solc
 from solitude.tools.ganache_cli import GanacheCli
-from solitude.tools.solium import Solium
+from solitude.tools.ethlint import EthLint
 
 
 __all__ = [
     "Tool",
     "Solc",
     "GanacheCli",
-    "Solium"
+    "EthLint"
 ]
