@@ -11,22 +11,22 @@
         "Tools.Directory": {
             "type": "string",
             "description": "Path to the directory where the downloaded tools will be installed",
-            "default": "{{DEFAULT_TOOLS_DIR}}"
+            "default": "~/.solitude-dev"
         },
         "Tools.Solc.Version": {
             "type": "string",
             "description": "solc (Compiler) required version",
-            "default": "{{ DEFAULT_SOLC_VERSION }}"
+            "default": "0.5.2"
         },
         "Tools.GanacheCli.Version": {
             "type": "string",
             "description": "ganache-cli (Server) required version",
-            "default": "{{DEFAULT_GANACHECLI_VERSION}}"
+            "default": "6.4.1"
         },
         "Tools.Solium.Version": {
             "type": "string",
             "description": "solium (Linter) required version",
-            "default": "{{DEFAULT_SOLIUM_VERSION}}"
+            "default": "1.2.3"
         },
         "Tools.Required": {
             "type": "array",
@@ -39,7 +39,7 @@
                 ]
             },
             "description": "List of tools required by your project",
-            "default": "[{{ DEFAULT_REQUIRED_TOOLS | tojson }}]"
+            "default": ["Solc", "GanacheCli"]
         },
         "Server.Port": {
             "anyOf": [
@@ -51,7 +51,7 @@
                 }
             ],
             "description": "Port or range of ports on which the server can be started",
-            "default": "{{DEFAULT_RPC_PORT}}"
+            "default": 8545
         },
         "Server.Accounts": {
             "type": "array",
@@ -59,7 +59,18 @@
                 "type": "string"
             },
             "description": "Initial accounts and balances for the server",
-            "default": "[{{ DEFAULT_ACCOUNTS | tojson }}]"
+            "default": [
+                "0xedf206987be3a32111f16c0807c9055e2b8b8fc84f42768015cb7f8471137890, 100 eth",
+                "0x0ca1573d73a070cfa5c48ddaf000b9480e94805f96a79ffa2d5bc6cc3288a92d, 100 eth",
+                "0x2688eabfae4637b73752d342991579500f231c72d52dd22b29bf018c0df4bdb7, 100 eth",
+                "0x4a4dfe519c6182638d18c75523a95ed55a938426d5e80ac55a39ed83f9e4c5fd, 100 eth",
+                "0x60fae350e15bdfdc227fc0616dbe26acb5f05d65d469a811383926a675940237, 100 eth",
+                "0x9085677b64cb52d4b36058be795cb315722a361fb78b042a02600bcb2b3f2ce1, 100 eth",
+                "0x372f46eae3eb91865809a90339acea1697555021d583dceb7dd05a635de7514d, 100 eth",
+                "0x48d73da350f98b1b16ede5fab0078c1ee2c3525483d5365626b4ba3d798686cb, 100 eth",
+                "0x669fd08dd8760b47b368153b2d8483c08295a0fa2853684746bf84ea533a611c, 100 eth",
+                "0x6d3f46df88ffbaf2c7c5a9567f6c26414fa205ae6ca27312a656115a71dfc9f4, 100 eth"
+            ]
         },
         "Server.BlockTime": {
             "anyOf": [
