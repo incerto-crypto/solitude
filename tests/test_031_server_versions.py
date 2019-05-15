@@ -2,7 +2,7 @@ import datetime
 import pytest
 from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
-from solitude.server import RPCTestServer, kill_all_servers
+from solitude.server import ETHTestServer, kill_all_servers
 from solitude.client import ETHClient, ContractBase
 from solitude.tools import GanacheCli
 from conftest import (  # noqa
@@ -22,7 +22,7 @@ def tool_ganache(request, tooldir):
 
 @pytest.fixture(scope="function")
 def server(tool_ganache):
-    server = RPCTestServer(
+    server = ETHTestServer(
         port=8545, executable=tool_ganache.get("ganache-cli"))
     server.start()
     yield server
@@ -31,7 +31,7 @@ def server(tool_ganache):
 
 
 @pytest.mark.require_local_tools
-def test_0001_pay(server: RPCTestServer, tool_solc):
+def test_0001_pay(server: ETHTestServer, tool_solc):
     CONTRACT_NAME = "TestContract"
 
     sources = ContractSourceList()

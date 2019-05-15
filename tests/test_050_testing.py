@@ -5,7 +5,7 @@
 
 import pytest
 from solitude.common import ContractSourceList
-from solitude.server import RPCTestServer, kill_all_servers  # noqa
+from solitude.server import ETHTestServer, kill_all_servers  # noqa
 from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
 from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa

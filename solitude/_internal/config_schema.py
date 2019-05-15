@@ -113,10 +113,10 @@ SCHEMA = {
         },
         "Server.BlockTime": {
             "anyOf": [
-                {"type": "integer"},
+                {"type": "number"},
                 {"type": "null"}
             ],
-            "description": "Starting block time for the server",
+            "description": "If not null, enable automatic mining with BlockTime interval, in seconds",
             "default": None
         },
         "Server.GasPrice": {

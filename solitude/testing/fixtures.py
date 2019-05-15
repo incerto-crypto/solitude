@@ -10,7 +10,12 @@ import pytest
 
 @pytest.fixture(scope="module")
 def sol():
-    ctx = SOL_new()
-    yield ctx
-    ctx.teardown()
-    kill_all_servers()
+    """pytest fixture for a testing context configured with the default
+    configuration file, solitude.yaml.
+    """
+    try:
+        ctx = SOL_new()
+        yield ctx
+        ctx.teardown()
+    finally:
+        kill_all_servers()

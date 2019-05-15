@@ -7,9 +7,11 @@ from typing import Mapping, Union, Optional  # noqa
 import os
 import shutil
 import tempfile
+from functools import wraps
 from collections import OrderedDict
 
-from solitude.server import RPCTestServer, kill_all_servers  # noqa
+from solitude._internal.error_util import type_assert, RaiseForParam
+from solitude.server import ETHTestServer, kill_all_servers  # noqa
 from solitude.client import ContractBase, ETHClient, EventLog  # noqa
 from solitude.common import ContractObjectList
 from solitude.compiler import Compiler  # noqa
@@ -17,104 +19,134 @@ from solitude import Factory, read_config_file
 
 
 class TestingContext:
-    def __init__(self, cfg: dict, tmpdir=None):
+    def __init__(self, cfg: dict):
+        """Create a testing context containing configured instances of the client,
+        server and compiler.
+
+        Contracts from Project.ObjectDir (if not null) are added to the client's collection.
+
+        A server is started if Testing.RunServer is true. In this case, the client is
+        connected to the new server endpoint address, whatever it is, overriding the client
+        endpoint configuration.
+
+        :param cfg: configuration dictionary
+        """
         self._cfg = cfg
         self._factory = Factory(self._cfg)
 
-        self.client = None  # type: ETHClient
-        self.server = None  # type: RPCTestServer
-        self.compiler = None  # type: Compiler
-        self._tmpdir = tmpdir
+        self._client = None  # type: ETHClient
+        self._server = None  # type: ETHTestServer
+        self._compiler = None  # type: Compiler
         self._server_started = False
 
         endpoint = None
 
         project_tools = self._factory.get_required()
         if "Solc" in project_tools:
-            self.compiler = self._factory.create_compiler()
+            self._compiler = self._factory.create_compiler()
 
         if "GanacheCli" in project_tools:
-            self.server = self._factory.create_server()
+            self._server = self._factory.create_server()
             if self._cfg["Testing.RunServer"]:
-                self.server.start()
+                self._server.start()
                 self._server_started = True
                 # ovverride endpoint for client
-                endpoint = self.server.endpoint
+                endpoint = self._server.endpoint
 
-        self.client = self._factory.create_client(
+        self._client = self._factory.create_client(
             endpoint=endpoint)
 
         object_dir = self._cfg["Project.ObjectDir"]
         if object_dir is not None:
             objects = ContractObjectList()
             objects.add_directory(object_dir)
-            self.client.update_contracts(objects)
+            self._client.update_contracts(objects)
 
     @property
     def cfg(self):
+        """Configuration"""
         return self._cfg
 
     @property
-    def tmpdir(self):
-        if self._tmpdir is None:
-            self._tmpdir = tempfile.mkdtemp()
-        return self._tmpdir
+    def client(self):
+        """Client instance"""
+        return self._client
+
+    @property
+    def server(self):
+        """Server instance"""
+        return self._server
+
+    @property
+    def compiler(self):
+        """Compiler instance"""
+        return self._compiler
 
     def teardown(self):
+        """Teardown the testing context, terminating the test server if any."""
         if self._server_started:
-            self.server.stop()
-        if self._tmpdir is not None:
-            shutil.rmtree(self._tmpdir)
+            self._server.stop()
 
-    def account(self, name: Union[str, int]):
-        return self.client.account(name)
+    @wraps(ETHClient.account)
+    def account(self, address):
+        return self._client.account(name)
 
-    def address(self, name: Union[str, int]):
-        return self.client.address(name)
+    @wraps(ETHClient.address)
+    def address(self, account_id: int):
+        return self._client.address(name)
 
+    @wraps(ETHClient.deploy)
     def deploy(self, contract_selector: str, args=(), wrapper=ContractBase):
-        return self.client.deploy(contract_selector, args, wrapper)
+        return self._client.deploy(contract_selector, args, wrapper)
 
+    @wraps(ETHClient.capture)
     def capture(self, pattern):  # noqa
-        return self.client.capture(pattern)
+        return self._client.capture(pattern)
 
-    def set_account_alias(self, name: str, account_num: int):
-        return self.client.set_account_alias(name, account_num)
+    @wraps(ETHClient.get_accounts)
+    def get_accounts(self, reload=False) -> list:
+        return self._client.get_accounts()
 
-    def get_accounts(self):
-        return self.client.get_accounts()
-
+    @wraps(ETHClient.get_events)
     def get_events(self):
-        return self.client.get_events()
+        return self._client.get_events()
 
+    @wraps(ETHClient.clear_events)
     def clear_events(self):
-        return self.client.clear_events()
+        return self._client.clear_events()
 
+    @wraps(ETHClient.get_current_account)
     def get_current_account(self):
-        return self.client.get_current_account()
+        return self._client.get_current_account()
 
-    @property
-    def rpc(self):
-        return self.client.rpc
-
-    @property
-    def web3(self):
-        return self.client.web3
-
+    @wraps(ETHClient.mine_block)
     def mine_block(self) -> None:
-        return self.client.mine_block()
+        return self._client.mine_block()
 
+    @wraps(ETHClient.increase_blocktime_offset)
     def increase_blocktime_offset(self, seconds: int) -> int:
-        return self.client.increase_blocktime_offset(seconds)
+        return self._client.increase_blocktime_offset(seconds)
 
+    @wraps(ETHClient.get_last_blocktime)
     def get_last_blocktime(self) -> int:
-        return self.client.get_last_blocktime()
+        return self._client.get_last_blocktime()
 
 
-SOL = TestingContext
+def SOL_new(
+        cfg: Union[dict, str]="solitude.yaml",
+        relative_to: Optional[str]=None) -> TestingContext:
+    """Create a new testing context
 
+    :param cfg: configuration dictionary or path. If `cfg` is a string, it is interpreted
+        as a path to the yaml or json file containing the configuration dictionary.
+    :param relative_to: a path, or None; if `cfg` is a path and `relative_to` is not None,
+        make the path of the configuration file `cfg` relative to the parent directory of
+        `relative_to`. This can be used with `__file__` to make the configuration file
+        location relative to the test script.
+    """
+    with RaiseForParam("cfg"):
+        type_assert(cfg, (dict, OrderedDict))
 
-def SOL_new(cfg: Union[dict, OrderedDict, str]="solitude.yaml", relative_to: Optional[str]=None, tmpdir=None) -> SOL:
     if isinstance(cfg, str):
         path = cfg
         if relative_to is not None:
@@ -122,12 +154,10 @@ def SOL_new(cfg: Union[dict, OrderedDict, str]="solitude.yaml", relative_to: Opt
                 os.path.abspath(relative_to))
             path = os.path.join(rel_dir, path)
         cfg_dict = read_config_file(path)
-    elif isinstance(cfg, dict):
-        cfg_dict = cfg
     else:
-        raise TypeError("cfg is not dict or str")
+        cfg_dict = cfg
+
     try:
-        return SOL(cfg_dict, tmpdir=tmpdir)
+        return TestingContext(cfg_dict)
     except Exception:
         kill_all_servers()
-        raise

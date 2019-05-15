@@ -17,9 +17,10 @@ from solitude.compiler.solc_wrapper import SolcWrapper as SolcWrapper
 
 
 class Compiler:
-    Out = SolcWrapper.Out
+    """Wrapper for the solidity contract compiler
+    """
 
-    OUTPUT_VALUES = [
+    _OUTPUT_VALUES = [
         SolcWrapper.Out.AST,
         SolcWrapper.Out.ABI,
         SolcWrapper.Out.DEPLOY_OBJECT,
@@ -33,16 +34,23 @@ class Compiler:
     ]
 
     def __init__(self, executable: str, optimize: Optional[int]=None):
-        super().__init__()
+        """Create a compiler instance
+
+        :param executable: path to compiler executable binary
+        :param optimize: solidity optimizer runs, or None
+        """
         self._executable = executable
         self._solc = SolcWrapper(
             executable=executable,
-            outputs=Compiler.OUTPUT_VALUES,
+            outputs=Compiler._OUTPUT_VALUES,
             optimize=optimize,
             warnings_as_errors=False)  # TODO expose this option
 
     def compile(self, sourcelist: ContractSourceList) -> ContractObjectList:
-        """Compile all contracts
+        """Compile all contracts in a collection of sources
+
+        :param sourcelist: collection of sources as ContractSourceList
+        :return: compiled contracts as ContractObjectList
         """
         output_dict = self._solc.compile(
             source_files=sourcelist.file_sources,

@@ -14,7 +14,12 @@ from solitude._internal import RaiseForParam, type_assert, EnumType, value_asser
 from solitude.common.errors import CommunicationError
 
 
-def get_resource_path(resource_name):
+def get_resource_path(resource_name: str):
+    """Get location of a solitude resource file in the filesystem
+
+    :param resource_name: name of the resource
+    :return: resource file path
+    """
     return os.path.join(
         os.path.dirname(os.path.abspath(solitude._internal.__file__)),
         "resources",
@@ -68,10 +73,29 @@ def _url_to_fileobj(url: str, decode=False):
 
 
 def open_url(url: str, decode=False):
+    """Open URL and return readable file-like
+
+    The URL can have one of the following schemas
+
+    - https://{hostname}/{path} - HTTPS url
+    - http://{hostname}/{path} - HTTP url
+    - resource://{name} - solitude resource, by name
+    - file://{path} file on the filesystem, by path
+
+    :param url: source URL
+    :param decode: interpret the stream as utf-8 text and convert it to string
+    :return: a file-like object, binary if decode is False, otherwise text
+    """
     return _url_to_fileobj(url, decode=decode)
 
 
 def read_from_url(url: str, decode=False):
+    """Read file from URL to a byte array or string
+
+    :param url: source URL (see :py:func:`open_url`)
+    :param decode: interpret the stream as utf-8 text and convert it to string
+    :return: a byte array (bytes) if decode is False, otherwise a string (str)
+    """
     with _url_to_fileobj(url, decode=decode) as source:
         if decode:
             data = io.StringIO()
@@ -83,6 +107,12 @@ def read_from_url(url: str, decode=False):
 
 
 def copy_from_url(url: str, destination, decode=False):
+    """Copy file from URL to file-like
+
+    :param url: source URL (see :py:func:`open_url`)
+    :param destination: destination writable file-like
+    :param decode: interpret the stream as utf-8 text and convert it to string
+    """
     with _url_to_fileobj(url, decode=decode) as source:
         _copy_fileobj_to_destination(source, destination, is_text=decode)
 
@@ -113,6 +143,10 @@ _debug_hooks = {
 
 
 def update_global_config(config: dict):
+    """Update the solitude global configuration from a dictionary
+
+    :param config: dictionary containing the values to replace
+    """
     _global_config.update(config)
     if "DebugHooks" in config:
         debug_hooks = config["DebugHooks"]
@@ -121,4 +155,9 @@ def update_global_config(config: dict):
 
 
 def get_global_config():
+    """Get the solitude global configuration, containing global settings of the
+    solitude framework.
+
+    :return: the solitude global config
+    """
     return _global_config.get()

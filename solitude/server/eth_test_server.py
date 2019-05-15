@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-from typing import Tuple, Sequence, Dict, Set, Optional, Union  # noqa
+from typing import Tuple, Sequence, Dict, Set, Optional, Union, List  # noqa
 import time
 import os
 import sys
@@ -11,7 +11,7 @@ import signal
 import threading
 import subprocess
 from collections import namedtuple
-from solitude.client.rpc_client import RPCClient
+from solitude.common import RPCClient
 from solitude.common.errors import SetupError, CommunicationError
 
 # TODO fix coordination of multiple ganache instances for test parallelization
@@ -20,9 +20,6 @@ ServerInfo = namedtuple('RPCServerInfo', ['pid', 'port', 'endpoint'])
 
 _all_servers_lock = threading.Lock()
 _all_servers = {}  # type: Dict[int, ServerInfo]
-
-_ports_lock = threading.Lock()
-_ports = set()  # type: Set[int]
 
 
 def get_all_servers() -> Sequence[ServerInfo]:
@@ -52,51 +49,40 @@ def _remove_server(pid: int):
             pass
 
 
-def _reserve_port(port_range: Tuple[int, int]) -> int:
-    with _ports_lock:
-        for port in range(port_range[0], port_range[1]+1):
-            if port not in _ports:
-                _ports.add(port)
-                return port
-    raise SetupError("No free port found in range (%d, %d)" % port_range)
-
-
-def _free_port(port: int):
-    with _ports_lock:
-        try:
-            _ports.remove(port)
-        except KeyError:
-            pass
-
-
-class RPCTestServer:
+class ETHTestServer:
     """Wrapper around the ganache-cli executable
     """
     def __init__(
             self,
             executable="ganache-cli",
             host="127.0.0.1",
-            port: Union[int, Tuple[int, int]]=(8545, 8545),
-            accounts=None,
-            blocktime=None,
+            port: int=8545,
+            accounts: List[Tuple[str, int]]=None,
+            blocktime: Optional[float]=None,
             gasprice=20000000000,
             gaslimit=6721975):
         """
-        :param port: port on which the new ganache-cli instance will listen
-        :param executable: path to executable or executable name in PATH
+        Create a ganache-cli server instance
+
+        :param executable: path to the ganache-cli executable file
+        :param host: address of the interface to which the server will bind to
+        :param port: port on which the server will listen
+        :param accounts: list of accounts to create on the server, as a list of
+            (private_key, wei_balance) tuples, where private_key is a hex string
+            of 32 bytes prefixed with "0x".
+        :param blocktime: if not None, enable automatic mining with blocktime
+            interval, in seconds.
+        :param gasprice: price of gas (wei)
+        :param gaslimit: gas limit
         """
         self._executable = executable
         self._host = host
-        if isinstance(port, tuple):
-            self._port_range = port
-        else:
-            self._port_range = (port, port)
+        self._port = port
         self._accounts = accounts
         self._blocktime = blocktime
         self._gasprice = gasprice
         self._gaslimit = gaslimit
 
-        self._port = None  # type: Optional[int]
         self._endpoint = None  # type: Optional[str]
         self._pid = None  # type: Optional[int]
         self._process = None  # type: Optional[subprocess.Popen]
@@ -110,18 +96,18 @@ class RPCTestServer:
         self._stdout, self._stderr = self._process.communicate()
         assert(isinstance(self._pid, int))
         _remove_server(self._pid)
-        assert(isinstance(self._port, int))
-        _free_port(self._port)
 
-    def start(self, timeout: float = 15.0) -> None:
-        """Start in background
-        :param timeout: timeout to wait for ganache-cli to respond on JSON-RPC interface
+    def start(self, timeout: float=15.0) -> None:
+        """Start ganache-cli in the background.
+
+        When this function terminates (without errors), it means the server is running
+        in the background and ready to receive requests.
+
+        :param timeout: timeout to wait for ganache-cli to respond, seconds
         """
         assert self._pid is None
 
-        # choose port
-        self._port = _reserve_port(self._port_range)
-        self._endpoint = "http://127.0.0.1:%d" % self._port
+        self._endpoint = "http://%s:%d" % (self._host, self._port)
         self._rpc = RPCClient(self._endpoint)
 
         cmd = [
@@ -171,20 +157,19 @@ class RPCTestServer:
                 pass
             if time.time() - time_begin > timeout:
                 self.kill()
-                _free_port(self._port)
                 raise SetupError("Failed to start ganache-cli")
         # _cli_version = self._rpc.web3_clientVersion()
         # print("ganache-cli version %s" % cli_version)
 
     @property
     def endpoint(self) -> str:
-        """Get endpoint
-        :return: endpoint url string
+        """Endpoint URL
         """
         return self._endpoint
 
-    def kill(self, timeout: float = 1.0) -> None:
+    def kill(self, timeout: float=1.0) -> None:
         """Forcibly kill (SIGKILL) the ganache-cli process and wait
+
         :param timeout: time to wait for ganache-cli to terminate
         """
         try:
@@ -198,7 +183,7 @@ class RPCTestServer:
 
     def stop(self, timeout: float=15.0) -> None:
         """Terminate (SIGTERM) the ganache-cli process and wait. If this fails,
-            kill the process
+            kill the process (SIGKILL).
 
         :param timeout: time to wait for ganache-cli to terminate
         """
@@ -214,7 +199,8 @@ class RPCTestServer:
 
     def is_alive(self) -> bool:
         """Check if the ganache-cli process is running
-        :return: True if alive
+
+        :return: True if ganache-cli is running
         """
         if self._thread is None:
             return False

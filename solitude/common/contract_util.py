@@ -6,7 +6,12 @@
 import sys
 
 
-def path_to_unitname(path):
+def path_to_unitname(path: str) -> str:
+    """Create a source unit name from a path
+
+    :param path: source file path
+    :return: the corresponding normalized source unit name
+    """
     # solc does not accept r"\" in source unit names
     # C:\path\to\file.sol -> /C/path/to/file.sol
     if sys.platform == "win32":

@@ -9,7 +9,7 @@ import hashlib
 import binascii
 import bisect
 
-from solitude.client import RPCClient
+from solitude.common import RPCClient
 from solitude.common import ContractObjectList, hex_repr
 
 

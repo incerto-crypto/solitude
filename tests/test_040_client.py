@@ -11,7 +11,7 @@ import textwrap
 import pytest
 from solitude.common import ContractSourceList
 from solitude.compiler import Compiler
-from solitude.server import RPCTestServer, kill_all_servers
+from solitude.server import ETHTestServer, kill_all_servers
 from solitude.client import ETHClient, BatchCaller, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
@@ -25,7 +25,7 @@ PRAGMA = "pragma solidity ^{solidity_version};\n".format(
 
 @pytest.fixture(scope="function")
 def server(tool_ganache):
-    server = RPCTestServer(
+    server = ETHTestServer(
         port=8545, executable=tool_ganache.get("ganache-cli"))
     server.start()
     yield server

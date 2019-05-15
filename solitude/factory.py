@@ -70,11 +70,11 @@ class Factory:
             optimize=self._cfg["Compiler.Optimize"])
         return compiler
 
-    def create_server(self) -> "RPCTestServer":
-        """Create a RPCTestServer object, used to start a ganache test node.
+    def create_server(self) -> "ETHTestServer":
+        """Create a ETHTestServer object, used to start a ganache test node.
         """
-        from solitude.server import RPCTestServer
-        return RPCTestServer(
+        from solitude.server import ETHTestServer
+        return ETHTestServer(
             executable=self._tools.get("GanacheCli").get("ganache-cli"),
             port=self._cfg["Server.Port"],
             host=self._cfg["Server.Host"],

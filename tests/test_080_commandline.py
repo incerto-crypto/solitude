@@ -21,13 +21,15 @@ def prepend_pragma_solidity(source, version):
 def run_solitude(args=[]):
     import solitude._commandline.main
     with unittest.mock.patch("sys.argv", ["solitude"] + args):
-        solitude._commandline.main.main()
+        retcode = solitude._commandline.main.main()
+        assert retcode == 0
 
 
 def run_pytest(args=[]):
     import pytest
     with unittest.mock.patch("sys.argv", ["pytest"] + args):
-        pytest.main()
+        retcode = pytest.main()
+        assert retcode == 0
 
 
 @pytest.mark.require_local_tools
@@ -75,37 +77,41 @@ TEST_SCRIPT = """\
 import pytest
 from solitude.testing import sol, TransactionError
 
+@pytest.fixture(scope="function")
+def me(sol):
+    return sol.address(0)
+
 
 @pytest.fixture(scope="function")
-def shelter(sol):
+def shelter(sol, me):
     # print(sol.client.compiled.contracts)
     # deploy and return contract instance
-    with sol.account(0):
+    with sol.account(me):
         return sol.deploy("CatShelter", args=())
 
 
-def test_001_adopt_cat(sol, shelter):
+def test_001_adopt_cat(sol, shelter, me):
     # adopt a cat and check you are its adopter
     CAT_ID = 3
-    with sol.account(0):
+    with sol.account(me):
         shelter.transact_sync("adopt", CAT_ID)
 
-    assert sol.address(0) == shelter.call("adopters", 3)
+    assert me == shelter.call("adopters", 3)
 
 
-def test_002_adopt_wrong_id(sol, shelter):
+def test_002_adopt_wrong_id(sol, shelter, me):
     # adopt a cat which does not exist and expect an error
     CAT_ID = 60
-    with sol.account(0):
+    with sol.account(me):
         with pytest.raises(TransactionError):
             # this transaction should fail
             shelter.transact_sync("adopt", CAT_ID)
 
 
-def test_003_get_adopters_list(sol, shelter):
+def test_003_get_adopters_list(sol, shelter, me):
     CAT_ID = 3
-    with sol.account(0):
+    with sol.account(me):
         shelter.transact_sync("adopt", CAT_ID)
     adopters = shelter.call("getAdopters")
-    assert adopters[CAT_ID] == sol.address(0)
+    assert me == adopters[CAT_ID]
 """

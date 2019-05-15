@@ -26,7 +26,9 @@ class ContractBase:
             contractname: str,
             contract: web3.contract.Contract):
         """
-        :param w3: web3 instance
+        :param client: solitude client object which produced this instance
+        :param unitname: name of the source unit containing the contract
+        :param contractname: name of the contract
         :param contract: web3 contract instance:
         """
         self._client = client  # type solitude.client.eth_client.ETHClient
@@ -36,60 +38,61 @@ class ContractBase:
 
     @property
     def unitname(self):
+        """Name of the source unit containing this contract"""
         return self._unitname
 
     @property
     def name(self) -> str:
+        """Contract name"""
         return self._contractname
 
     @property
     def account(self):
-        """
-        :return: account which is being as sender
-        """
+        """Account which is being used as sender"""
         return self._client.web3.eth.defaultAccount
 
     @property
     def address(self):
-        """
-        :return: contract address
-        """
+        """Contract address"""
         return self._contract.address
 
     @property
-    def abi(self):
-        """
-        :return: contract abi
-        """
+    def abi(self) -> dict:
+        """Contract ABI"""
         return self._contract.abi
 
     @property
     def functions(self):
-        """
-        :return: functions from web3 contract object
-        """
+        """Functions from web3 contract object"""
         return self._contract.functions
 
-    def __getattr__(self, key):
-        # redirect any unknown attribute to contract object
-        return getattr(self._contract, key)
+    @property
+    def web3(self):
+        """Raw web3 contract object"""
+        return self._contract
 
     def call(self, func: str, *args):
+        r"""Call a function in the contract
+
+        :param func: function name
+        :param \*args: function arguments
+        """
         return getattr(self._contract.functions, func)(*args).call()
 
-    def transact_sync(self, func: str, *args, value: int=None, gas: int=None, gasprice: int=None):
-        """Send a transaction and wait for its receipt
+    def transact_sync(self, func: str, *args, value: int=None, gas: int=None, gasprice: int=None) -> TransactionInfo:
+        r"""Send a transaction and wait for its receipt
+
         :param func: function name
-        :param args: function arguments
+        :param \*args: function arguments
         :param value: optional amount of ether to send (in wei)
         :param gas: optional gas limit
         :param gasprice: optional gas price
-        :return: web3 transaction receipt
+        :return: transaction information
         """
         txargs = {
             "from": self._client.get_current_account()
         }
-        
+
         if value is not None:
             txargs["value"] = value
 

@@ -7,7 +7,7 @@ import datetime
 import pytest
 from solitude.common import ContractSourceList, ContractObjectList
 from solitude.compiler import Compiler
-from solitude.server import RPCTestServer, kill_all_servers
+from solitude.server import ETHTestServer, kill_all_servers
 from solitude.client import ETHClient, ContractBase
 from conftest import (  # noqa
     tooldir, tool_solc, tool_ganache, SOLIDITY_VERSION, GANACHE_VERSION)
@@ -17,7 +17,7 @@ pytestmark = [pytest.mark.base, pytest.mark.server]
 
 @pytest.fixture(scope="function")
 def server(tool_ganache):
-    server = RPCTestServer(
+    server = ETHTestServer(
         port=8545, executable=tool_ganache.get("ganache-cli"))
     server.start()
     yield server
@@ -25,7 +25,7 @@ def server(tool_ganache):
     kill_all_servers()
 
 
-def test_0001_run(server: RPCTestServer):
+def test_0001_run(server: ETHTestServer):
     client = ETHClient(endpoint=server.endpoint)
     client.mine_block()
     blocktime = client.get_last_blocktime()
@@ -35,7 +35,7 @@ def test_0001_run(server: RPCTestServer):
     assert(time_bound_low <= blocktime <= time_bound_high)
 
 
-def test_0002_increase_time(server: RPCTestServer, tool_solc):
+def test_0002_increase_time(server: ETHTestServer, tool_solc):
     TIME_OFFSET = 10000  # seconds
     TOLERANCE = 60  # seconds
     CONTRACT_NAME = "TestContract"
@@ -70,7 +70,7 @@ def test_0002_increase_time(server: RPCTestServer, tool_solc):
         "Time from contract function is different from last block time")
 
 
-def test_0003_pay(server: RPCTestServer, tool_solc):
+def test_0003_pay(server: ETHTestServer, tool_solc):
     CONTRACT_NAME = "TestContract"
 
     sources = ContractSourceList()

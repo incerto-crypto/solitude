@@ -17,6 +17,7 @@ from solitude.common.contract_objectlist import ContractObjectList
 from solitude.common.contract_sourcelist import ContractSourceList
 from solitude.common.contract_util import path_to_unitname
 from solitude.common.dump import Dump
+from solitude.common.rpc_client import RPCClient
 
 
 __all__ = [
@@ -40,5 +41,6 @@ __all__ = [
     "ContractSourceList",
     "path_to_unitname",
 
-    "Dump"
+    "Dump",
+    "RPCClient"
 ]

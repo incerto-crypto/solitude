@@ -15,8 +15,11 @@ Solitude
     :caption: API Reference
 
     solitude
-    solitude.client
-    solitude.compiler
+    solitude.common
     solitude.testing
-    solitude.tools
     solitude.server
+    solitude.client
+    solitude.debugger
+    solitude.compiler
+    solitude.linter
+    solitude.tools

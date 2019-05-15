@@ -3,6 +3,7 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
+from typing import List, Tuple
 import json
 import requests
 from solitude.common.errors import CommunicationError
@@ -17,7 +18,9 @@ def iter_list_or_single(obj):
 
 
 class RPCClient:
-    """Communicate with JSON-RPC server
+    """Communicate with a JSON-RPC server
+
+    Any method can be called by RPCClient.rpcFunctionName(arguments...)
     """
     def __init__(self, endpoint: str):
         """
@@ -62,7 +65,13 @@ class RPCClient:
             return next(self._communicate(data))
         return rpc_call
 
-    def batch_call(self, functions):
+    def batch_call(self, functions: List[Tuple[str, list]]):
+        """Perform a batch call
+
+        :param function: list of the requests to perform in batch, as tuples of
+            (method name, list of arguments)
+        :return: the list of responses from the server
+        """
         data = []
         for (key, args) in functions:
             data.append(self._prepare(key, args))

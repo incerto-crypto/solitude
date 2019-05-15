@@ -18,11 +18,12 @@ from solitude.common import open_url
 from solitude.common.errors import SetupError
 
 
-def config_schema_to_defaults(schema):
-    """Extracts default required values from a jsonschema
+def config_schema_to_defaults(schema) -> dict:
+    """Extract default required values from the first level of a json-schema.
 
-    The json schema must be an object and have defaults for
-        all properties
+    The json schema must be an object and have defaults for all properties.
+
+    :return: a dictionary containing the extracted default properties
     """
     cfg = OrderedDict()
     properties = schema["properties"]
@@ -31,7 +32,11 @@ def config_schema_to_defaults(schema):
     return cfg
 
 
-def make_default_config():
+def make_default_config() -> dict:
+    """Create a default solitude configuration.
+
+    :return: a configuration dictionary
+    """
     return config_schema_to_defaults(SCHEMA)
 
 
@@ -67,7 +72,13 @@ def yaml_ordered_dump(data, stream=None, Dumper=MySafeDumper, **kwargs):
     return yaml.dump(data, stream, OrderedDumper, **kwargs)
 
 
-def read_yaml_or_json(url: str):
+def read_yaml_or_json(url: str) -> dict:
+    """Read a YAML or JSON document.
+
+    :param url: URL or path; if `url` ends with '.yaml', the document is interpreted
+        as YAML, otherwise it is assumed to be JSON.
+    :return: a dictionary with the document contents.
+    """
     with open_url(url, decode=True) as fp:
         if url.endswith(".yaml"):
             return yaml_ordered_load(fp)
@@ -75,10 +86,13 @@ def read_yaml_or_json(url: str):
             return json.load(fp, object_pairs_hook=OrderedDict)
 
 
-def read_config_file(path: str):
-    """Read a solitude configuration from yaml or json file.
+def read_config_file(url: str) -> dict:
+    """Read a solitude configuration from YAML or JSON.
 
-    :param path: path to configuration file
+    :param url: URL or path of configuration; if `url` ends with '.yaml',
+        the configuration file is interpreted as YAML, otherwise it is assumed
+        to be JSON.
+    :return: configuration dictionary
     """
     cfg_from_file = read_yaml_or_json(path)
     cfg = make_default_config()
@@ -91,7 +105,13 @@ def read_config_file(path: str):
     return cfg
 
 
-def write_config_file(cfg: Union[dict, OrderedDict], path: str):
+def write_config_file(cfg: dict, path: str) -> None:
+    """Write configuration dictionary to file. If the file exists, it will be
+    overwritten.
+
+    :param cfg: solitude configuration dictionary.
+    :param path: destination path.
+    """
     with open(path, 'w') as fp:
         if path.endswith(".yaml"):
             yaml_ordered_dump(cfg, fp, default_flow_style=False)
@@ -100,6 +120,11 @@ def write_config_file(cfg: Union[dict, OrderedDict], path: str):
 
 
 def parse_server_account(account: str) -> Tuple[str, int]:
+    """Parse entry from the list in `Server.Accounts` in the configuration.
+
+    :return: a tuple (private_key, balance_wei), where private key is a hex
+        string prefixed by "0x".
+    """
     units = {
         "": 1,
         "wei": 1,
@@ -130,12 +155,26 @@ def parse_server_account(account: str) -> Tuple[str, int]:
 
 
 def parse_path(path: Optional[str]) -> Optional[str]:
+    """Parse a path field from the configuration. Expands '~' to the current user's home
+        directory.
+
+    :param path: the path string
+    :return: expanded path if `path` was not None, else None
+    """
     if path is not None:
         return os.path.expanduser(path)
     return None
 
 
-def update_cfg_with_env_overrides(cfg: Union[dict, OrderedDict]) -> None:
+def update_cfg_with_env_overrides(cfg: dict) -> None:
+    """Update solitude configuration with overrides from environment variables.
+
+    Configuration overrides can be specified by setting environment variables with
+        name "SOL_{config_name}", where config_name is the name of the configuration option
+        with all occurrences of '.' replaced by '_'. (Example: "Server.Port" -> "SOL_Server_Port").
+
+    :param cfg: configuration dictionary, which is modified in place.
+    """
     PREFIX = "SOL_"
     for key, value in os.environ.items():
         if key.startswith(PREFIX):

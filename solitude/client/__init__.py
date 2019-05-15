@@ -4,7 +4,6 @@
 # COPYING file in the root directory of this source tree
 
 from solitude.client.eth_client import ETHClient, BatchCaller, Filter, EventLog  # noqa
-from solitude.client.rpc_client import RPCClient  # noqa
 from solitude.client.contract import ContractBase
 
 __all__ = [
@@ -12,7 +11,6 @@ __all__ = [
     "BatchCaller",
     "Filter",
     "EventLog",
-    "RPCClient",
 
     "ContractBase"
 ]
