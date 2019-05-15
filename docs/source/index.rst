@@ -14,6 +14,7 @@ Solitude
     :maxdepth: 2
     :caption: API Reference
 
+    config_schema
     solitude
     solitude.common
     solitude.testing
