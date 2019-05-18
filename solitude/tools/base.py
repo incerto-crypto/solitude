@@ -22,6 +22,8 @@ from solitude.common.resource_util import get_resource_path, get_global_config, 
 
 
 class Tool:
+    """An external tool that can be installed on the local filesystem and used
+    """
     def __init__(self, tooldir: str, name: str, version: str):
         self._tooldir = tooldir
         self._name = name
@@ -32,30 +34,53 @@ class Tool:
         self._provided_modules = {}  # type: Dict[str, str]
 
     def add(self):
+        """Install the tool into the tools directory
+        """
         raise NotImplementedError()
 
     def remove(self):
+        """Remove (delete) the tool from the tools directory
+        """
         raise NotImplementedError()
 
     def have(self) -> bool:
+        """Check if the tool is present in the tools directory
+        """
         raise NotImplementedError()
 
     def get(self, key: str) -> str:
+        """Get a module from the tool
+
+        :param key: a string key (name) associated with the module, usually
+            the name of the file.
+        :return: the filesystem path of the module location
+        """
         raise NotImplementedError()
 
-    def _provide(self, name: str, path: str):
-        self._provided_modules[name] = path
+    def _provide(self, key: str, path: str) -> None:
+        """Add a module (key, path) to the list of the modules provided by this
+        tool.
+
+        :param key: a key (name) associated to the module
+        """
+        self._provided_modules[key] = path
 
     @property
-    def provided(self):
+    def provided(self) -> Dict[str, str]:
+        """Get the provided modules
+
+        :return: dict of (key -> path) of all modules provided by the tool
+        """
         return copy.copy(self._provided_modules)
 
     @property
-    def name(self):
+    def name(self) -> str:
+        """Tool name"""
         return self._name
 
     @property
-    def version(self):
+    def version(self) -> str:
+        """Tool version string"""
         return self._version
 
 
@@ -77,6 +102,8 @@ def make_package_json(name, packages: dict):
 
 
 class ToolNpmTemplate(Tool):
+    """Template for creating tools from npm packages
+    """
     def __init__(
             self,
             tooldir: str,
@@ -132,6 +159,8 @@ class ToolNpmTemplate(Tool):
 
 
 class ToolDownloadTemplate(Tool):
+    """Template for creating tools from a downloadable executable or zipped executable
+    """
     def __init__(self, tooldir: str, name: str, version: str, provides: str, url: str, executable: str, unzip: bool):
         super().__init__(tooldir, name, version)
         name_version = "%s-%s" % (self._name, self._version)

@@ -89,11 +89,11 @@ class TestingContext:
 
     @wraps(ETHClient.account)
     def account(self, address):
-        return self._client.account(name)
+        return self._client.account(address)
 
     @wraps(ETHClient.address)
     def address(self, account_id: int):
-        return self._client.address(name)
+        return self._client.address(account_id)
 
     @wraps(ETHClient.deploy)
     def deploy(self, contract_selector: str, args=(), wrapper=ContractBase):
@@ -145,7 +145,7 @@ def SOL_new(
         location relative to the test script.
     """
     with RaiseForParam("cfg"):
-        type_assert(cfg, (dict, OrderedDict))
+        type_assert(cfg, (dict, str))
 
     if isinstance(cfg, str):
         path = cfg
@@ -161,3 +161,4 @@ def SOL_new(
         return TestingContext(cfg_dict)
     except Exception:
         kill_all_servers()
+        raise

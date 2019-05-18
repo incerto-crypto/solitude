@@ -3,8 +3,11 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-from solitude._internal.object_interface import ColorText
+import os
+from solitude import Factory, read_config_file
+from solitude._internal.oi_common_objects import ColorText
 from solitude._commandline.color_util import Color
+from solitude._commandline.text_util import TablePrinter
 from solitude.debugger import EvmDebugCore, EvmTrace, TraceStep, InteractiveDebuggerOI
 
 
@@ -13,6 +16,7 @@ def main(args):
 
     factory = Factory(read_config_file(args.config))
     client = factory.create_client()
+    client.update_contracts(factory.get_objectlist())
     debugger = EvmDebugCore(client, args.txhash)
     printer = TablePrinter([
         ("INDEX", 6),
@@ -43,7 +47,7 @@ def main(args):
             line])
 
         if args.variables:
-            for var in debugger.get_variables().values():
+            for var in debugger.get_values().values():
                 print(var)
         if args.frames:
             PRE = (printer.width * " ")

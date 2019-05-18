@@ -17,26 +17,73 @@ TraceStackItem = namedtuple("TraceStackItem", ["unitname", "contractname", "deco
 
 SourceMapping = namedtuple("SourceMapping", [
     "unitname", "source", "lines", "line_index", "line_start", "line_pos"])
+SourceMapping.__doc__ = "Source code and line information related to an instruction"
+SourceMapping.unitname.__doc__ = "source unit name"
+SourceMapping.source.__doc__ = "full source text"
+SourceMapping.lines.__doc__ = "full source text split in lines"
+SourceMapping.line_index.__doc__ = "line index where the relevant portion begins"
+SourceMapping.line_start.__doc__ = "index of the character where the line starts in the file"
+SourceMapping.line_pos.__doc__ = "index of the column where the relevant portion begins (in line)"
+
 
 TraceStep = namedtuple("TraceStep", [
     "index", "depth", "contractname",
     "pc", "op", "stack", "memory", "storage", "gas", "error",
     "start", "length", "fileno", "jumptype",
     "code"])
+TraceStep.__doc__ = "Debugger step (instruction) information"
+TraceStep.index.__doc__ = "incrementing index of the step"
+TraceStep.depth.__doc__ = "call stack depth"
+TraceStep.contractname.__doc__ = "contract name"
+TraceStep.pc.__doc__ = "program counter"
+TraceStep.op.__doc__ = "opcode string"
+TraceStep.stack.__doc__ = "EVM stack as list of hex strings"
+TraceStep.memory.__doc__ = "EVM memory as list of hex strings"
+TraceStep.storage.__doc__ = "EVM storage as dictionary of hex strings"
+TraceStep.gas.__doc__ = "Gas cost of the instruction"
+TraceStep.error.__doc__ = "Error message"
+TraceStep.start.__doc__ = """\
+index of the character in the source file where the source code mapped to \
+this instruction starts"""
+TraceStep.length.__doc__ = "length of the source code mapped to this instruction"
+TraceStep.fileno.__doc__ = "index which identifies the source unit"
+TraceStep.jumptype.__doc__ = """\
+type of jump, `'i'` for 'jump into call', `'o'`, for 'jump out of call', or empty (`''`)"""
+TraceStep.code.__doc__ = """\
+a SourceMapping object containing the source code and line information"""
 
 CallStackElement = namedtuple("CallStackElement", ["prev", "step"])
+CallStackElement.__doc__ = "Basic stack frame information"
+CallStackElement.prev.__doc__ = "the TraceStep before entering a call"
+CallStackElement.step.__doc__ = "the TraceStep after entering a call"
+
 CallStackEvent = namedtuple("CallStackEvent", ["event", "data"])
+CallStackEvent.__doc__ = "Call stack event information"
+CallStackEvent.event.__doc__ = "Type of event. Can be `'push'`, `'pop'` or `None`"
+CallStackEvent.data.__doc__ = "Event data. If the event is of type `'push'`, a :py:class:`CallStackElement`"
 
 
 class EvmTrace:
-    def __init__(self, rpc: RPCClient, compiled: ContractObjectList):
+    """Access debug information from the ETH server
+    """
+    def __init__(self, rpc: RPCClient, contracts: ContractObjectList):
+        """Create an EvmTrace instance
+
+        :param rpc: RPC client connected to the ETH server
+        :param contracts: a collection of contracts (see ContractObjectList)
+        """
         self._rpc = rpc
-        self._compiled = compiled
+        self._compiled = contracts
         self._address_to_contract = AddressToContract()
         self._address_to_contract.initialize(rpc, self._compiled)
         self.srcmapper = SourceMapper(self._compiled)
 
-    def trace_iter(self, txhash: bytes) -> Iterator[Tuple[TraceStep, List[TraceStep]]]:
+    def trace_iter(self, txhash: bytes) -> Iterator[Tuple[TraceStep, CallStackEvent]]:
+        """Iterate contract execution steps (instructions)
+
+        :param txhash: transaction hash to inspect, as byte array
+        :return: generator of tuples of (TraceStep, CallStackEvent)
+        """
         txhash_hex = hex_repr(txhash)
         transaction = self._rpc.eth_getTransactionByHash(txhash_hex)
         debug_trace = self._rpc.debug_traceTransaction(txhash_hex, {})
@@ -240,8 +287,8 @@ class SourcePosToLine:
 
 
 class SourceMapper:
-    def __init__(self, compiled: ContractObjectList):
-        self._compiled = compiled
+    def __init__(self, contracts: ContractObjectList):
+        self._compiled = contracts
         # collect sources
         self._unitname_to_posmapper = {}  # type: Dict[str, SourcePosToLine]
         self._unitname_fi_to_unitname = {}  # type: Dict[Tuple[str, int], str]
@@ -310,10 +357,10 @@ class AddressToContract:
                         # print("ContractID: %s" % repr(contract_id))
                         self._address_to_contract_id[contract_address] = contract_id
 
-    def _search_contract(self, contract_bin: Tuple[str, str, bytes], contract_bytecode: bytes) -> Tuple[str, str]:
+    def _search_contract(self, contracts_bin: Tuple[str, str, bytes], contract_bytecode: bytes) -> Tuple[str, str]:
         match_length = 0
-        match_id = None
-        for unitname, contractname, bytecode in contract_bin:
+        match_id = (None, None)
+        for unitname, contractname, bytecode in contracts_bin:
             if len(bytecode) > match_length and contract_bytecode.startswith(bytecode):
                 match_length = len(bytecode)
                 match_id = (unitname, contractname)

@@ -16,6 +16,8 @@ from solitude.common.errors import CommunicationError
 
 
 class SolcEmscripten(ToolNpmTemplate):
+    """Emscripten version of the solitude compiler
+    """
     def __init__(self, tooldir: str, version: str):
         super().__init__(
             tooldir=tooldir,
@@ -27,6 +29,8 @@ class SolcEmscripten(ToolNpmTemplate):
 
     def add(self):
         super().add()
+        # The solc launch script is patched to fix stdin handling with node 11.
+        # However this is still broken in node < 11 for large inputs.
         try:
             solcjs_standard_json = get_resource_path("solcjs_standard_json")
             executable_real_path = os.path.realpath(self._executable_path)

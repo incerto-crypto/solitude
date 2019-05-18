@@ -5,7 +5,6 @@
 
 import json
 import os
-from solitude.common.resource_util import get_resource_path
 
 
 # Configuration schema
@@ -23,7 +22,10 @@ from solitude.common.resource_util import get_resource_path
 
 # TODO enforce more strict schema on strings where possible
 
-SCHEMA_FILENAME = get_resource_path("config_schema.json")
+SCHEMA_FILENAME = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "resources",
+    "config_schema.json")
 
 with open(SCHEMA_FILENAME) as fschema:
     SCHEMA = json.load(fschema)

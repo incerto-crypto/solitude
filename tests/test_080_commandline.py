@@ -75,7 +75,8 @@ contract CatShelter
 
 TEST_SCRIPT = """\
 import pytest
-from solitude.testing import sol, TransactionError
+from solitude.testing import sol
+from solitude.errors import TransactionError
 
 @pytest.fixture(scope="function")
 def me(sol):

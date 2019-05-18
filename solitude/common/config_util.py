@@ -94,7 +94,7 @@ def read_config_file(url: str) -> dict:
         to be JSON.
     :return: configuration dictionary
     """
-    cfg_from_file = read_yaml_or_json(path)
+    cfg_from_file = read_yaml_or_json(url)
     cfg = make_default_config()
     cfg.update(cfg_from_file)
     update_cfg_with_env_overrides(cfg)

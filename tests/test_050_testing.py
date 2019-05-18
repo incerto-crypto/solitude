@@ -8,7 +8,7 @@ from solitude.common import ContractSourceList
 from solitude.server import ETHTestServer, kill_all_servers  # noqa
 from solitude.client import ETHClient, ContractBase  # noqa
 from solitude.testing import SOL
-from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
+from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, attila  # noqa
 
 pytestmark = [pytest.mark.base, pytest.mark.testing]
 
@@ -24,8 +24,8 @@ def contracts(sol: SOL):
     sol.client.update_contracts(sol.compiler.compile(sources))
 
 
-def test_0001_pay(sol: SOL):
-    with sol.account(ATTILA):
+def test_0001_pay(sol: SOL, attila):
+    with sol.account(attila):
         TestContract = sol.deploy(
             CONTRACT_NAME, args=(), wrapper=ITestContract)
         value = TestContract.pay(100, 110)

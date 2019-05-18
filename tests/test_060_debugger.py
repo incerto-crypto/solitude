@@ -13,7 +13,7 @@ from solitude.testing import SOL
 
 from solitude.debugger import EvmTrace, InteractiveDebuggerOI
 from solitude._commandline.cmd_debug import InteractiveDebuggerCLI
-from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, ATTILA, GEORGE  # noqa
+from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, attila  # noqa
 from io import StringIO
 
 pytestmark = [pytest.mark.base, pytest.mark.debugger]
@@ -48,16 +48,16 @@ def reference_fib(n, depth=1):
     return FibResult(value=a.value + b.value, max_depth=max(a.max_depth, b.max_depth))
 
 
-def test_0001_fib(sol: SOL):
+def test_0001_fib(sol: SOL, attila):
 
-    with sol.account(ATTILA):
+    with sol.account(attila):
         Fibonacci = sol.deploy(
             "Fibonacci", args=(), wrapper=IFibonacci)
 
-    debugger = EvmTrace(sol.client.rpc, sol.client.compiled)
+    debugger = EvmTrace(sol.client.rpc, sol.client.contracts)
 
     for value in (7, 10):
-        with sol.account(ATTILA):
+        with sol.account(attila):
             tx = Fibonacci.fib(value)
         reference = reference_fib(value)
         result = Fibonacci.result
@@ -73,12 +73,12 @@ def test_0001_fib(sol: SOL):
         assert(max_stack_depth == 1 + reference.max_depth)
 
 
-def test_0002_interactive(sol: SOL):
-    with sol.account(ATTILA):
+def test_0002_interactive(sol: SOL, attila):
+    with sol.account(attila):
         Fibonacci = sol.deploy(
             "Fibonacci", args=(), wrapper=IFibonacci)
 
-    with sol.account(ATTILA):
+    with sol.account(attila):
         tx = Fibonacci.fib(7)
 
     LINE10_BP = "TestContract:10"

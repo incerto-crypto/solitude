@@ -3,7 +3,9 @@
 # This source code is licensed under the BSD-3-Clause license found in the
 # COPYING file in the root directory of this source tree
 
-from solitude.errors import CLIError
+import os
+from solitude.common import read_config_file
+from solitude.common.errors import CLIError
 from solitude.tools import Solc, EthLint, GanacheCli
 
 
@@ -43,7 +45,7 @@ def _require_tool(cfg, name):
     raise CLIError("This function requires a tool which is not installed: %s" % name)
 
 
-def main():
+def main(args):
     cfg = read_config_file(args.config)
     for tool in _iter_required_tools(cfg):
         _install_if_not_have(tool)

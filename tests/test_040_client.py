@@ -71,7 +71,7 @@ def client(tool_solc, server):
 @pytest.fixture(scope="function")
 def contracts(client):
     c = {}
-    with client.account(0):
+    with client.account(client.address(0)):
         c["TestContract"] = client.deploy(
             "TestContract", args=(), wrapper=ContractBase)
     return c
@@ -95,7 +95,7 @@ def test_0001_calls(client: ETHClient, contracts: Dict[str, ContractBase]):
 def test_0002_transactions(client: ETHClient, contracts: Dict[str, ContractBase]):
     TestContract = contracts["TestContract"]
 
-    with client.account(0):
+    with client.account(client.address(0)):
         TestContract.transact_sync("set_b", 30)
     assert TestContract.functions.a_plus_b().call() == 42 + 30
 
@@ -111,13 +111,15 @@ def event_is(event, contract_name, name, args):
 def test_0003_events(client: ETHClient, contracts: Dict[str, ContractBase]):
     TestContract = contracts["TestContract"]
 
-    with client.account(0), client.capture("*:TestContract.Change"):
+    attila = client.address(0)
+
+    with client.account(attila), client.capture("*:TestContract.Change"):
         TestContract.transact_sync("set_b", 50)
     events = client.get_events()
     assert len(events) == 1
     assert event_is(events[0], "TestContract", "Change", (1, 50))
 
-    with client.account(0), client.capture(re.compile(r".*:TestContract\..*")):
+    with client.account(attila), client.capture(re.compile(r".*:TestContract\..*")):
         TestContract.transact_sync("set_b", 40)
     events = client.get_events()
     assert len(events) == 1
@@ -125,7 +127,7 @@ def test_0003_events(client: ETHClient, contracts: Dict[str, ContractBase]):
 
     flt = client.add_filter([TestContract], ["Change"])
 
-    with client.account(0), client.capture("*:TestContract.*"):
+    with client.account(attila), client.capture("*:TestContract.*"):
         TestContract.transact_sync("set_b", 30)
     events = client.get_events()
     assert len(events) == 1

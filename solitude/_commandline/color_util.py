@@ -59,8 +59,10 @@ def colorize_text(text, color):
 
 
 def render_colortext(colortext: ColorText):
+    out = ""
     for text, color in colortext.iter_chunks():
         if color:
             out += colorize_text(text, color)
         else:
             out += text
+    return out

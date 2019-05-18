@@ -20,7 +20,7 @@ def make_unique_built_contract_filename(unitname: str, contractname: str):
     :param contractname: name of the contract
     :return: unique filename
     """
-    h = hashlib.sha256()
+    h = hashlib.md5()
     h.update(unitname.encode("utf-8"))
     h.update(b"\0")
     h.update(contractname.encode("utf-8"))

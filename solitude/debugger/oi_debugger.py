@@ -60,7 +60,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             frames = self.dbg.get_frames()
             if len(frames):
                 f = frames[0]
-                for var in f.returnValues:
+                for var in f.return_values:
                     obj["return_values"].append(var.to_obj())
         return obj
 
@@ -197,14 +197,14 @@ class InteractiveDebuggerOI(ObjectInterface):
                 if depth == prev_depth and next_s.event.event == "pop":
                     raise ObjectInterfaceException("step", args=["return"])
 
-    def _get_variables(self, iframe, istep):
+    def _get_values(self, iframe, istep):
         frames = self.dbg.get_frames()
         f = frames[iframe]
         s = self.dbg.get_step(istep)
-        variables = {}
-        variables.update(f.locals)
-        variables.update(s.values)
-        return variables
+        values = {}
+        values.update(f.locals)
+        values.update(s.values)
+        return values
 
     def cmd_print(self, args):
         varname = args[0]
@@ -217,7 +217,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             "variable": None
         }
         try:
-            variables = self._get_variables(self._current_frame, 0)
+            variables = self._get_values(self._current_frame, 0)
             obj["frame_found"] = True
             try:
                 variable = variables[varname]
@@ -237,7 +237,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             "variables": []
         }
         try:
-            variables = self._get_variables(self._current_frame, 0)
+            variables = self._get_values(self._current_frame, 0)
             obj["frame_found"] = True
             for variable in variables.values():
                 obj["variables"].append(variable.to_obj())

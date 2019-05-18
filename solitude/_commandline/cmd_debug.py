@@ -8,12 +8,14 @@ import functools
 import sys
 import os
 import cmd
+import binascii
 import json
 
+from solitude.common.errors import CLIError
 from solitude import Factory, read_config_file
 from solitude._internal.oi_common_objects import ColorText
 from solitude._internal.oi_interface import ObjectInterface, ObjectInterfaceException, parse_args
-from solitude.debugger.evm_debug_core import EvmDebugCore, Step, Function, Frame, Variable  # noqa
+from solitude.debugger.evm_debug_core import EvmDebugCore, Step, Function, Frame, Value  # noqa
 from solitude.debugger.evm_trace import TraceStep  # noqa
 from solitude.debugger.oi_debugger import InteractiveDebuggerOI
 from solitude._commandline.color_util import Color

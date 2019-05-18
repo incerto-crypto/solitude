@@ -26,9 +26,9 @@ def txhash_type(txhash):
     try:
         if not txhash.startswith("0x"):
             raise ValueError()
-        binascii.unhexlify(txhash[2:])
+        return binascii.unhexlify(txhash[2:])
     except ValueError:
-        raise CLIError("TXHASH format must be hex string prefixed with 0x")
+        raise CLIError("TXHASH format must be a hex string prefixed with 0x")
 
 
 def create_parser():
@@ -72,8 +72,10 @@ def create_parser():
         return cmd_debug
     p_debug.set_defaults(module=module_debug)
     p_debug.add_argument(
+        "txhash", type=txhash_type,
+        help="Transaction hash, a hex string prefixed with 0x")
+    p_debug.add_argument(
         "--eval-command", "-ex", action="append", help="Execute command at start", dest="ex")
-    p_debug.add_argument("txhash", type=txhash_type)
 
     def module_trace():
         from solitude._commandline import cmd_trace

@@ -133,6 +133,11 @@ def sol(request, tooldir):
 
 
 @pytest.fixture(scope="module")
+def attila(sol):
+    return sol.address(ATTILA)
+
+
+@pytest.fixture(scope="module")
 def tool_solc(tooldir):
     tool = Solc(tooldir=tooldir, version=SOLIDITY_VERSION)
     if not tool.have():

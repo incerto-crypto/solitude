@@ -45,7 +45,7 @@ def test_0001_pay(server: ETHTestServer, tool_solc):
 
     client = ETHClient(endpoint=server.endpoint)
     client.update_contracts(compiled)
-    with client.account(0):
+    with client.account(client.address(0)):
         TestContract = client.deploy(
             CONTRACT_NAME, args=(), wrapper=MyTestContractWrapper)
         value = TestContract.pay(100, 110)

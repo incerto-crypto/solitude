@@ -18,7 +18,7 @@ class ContractSourceList:
         self._file_sources = []  # type: List[str]
         self._text_sources = {}  # type: Dict[str, str]
 
-    def add_directory(self, path: str, ext_filter: Optional[List[str]]=None) -> None:
+    def add_directory(self, path: str, ext_filter: Optional[List[str]]=[".sol"]) -> None:
         """Add all sources from a directory.
 
         :param path: directory path
