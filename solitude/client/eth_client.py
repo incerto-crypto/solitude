@@ -519,6 +519,21 @@ class ETHClient(AccountContext, EventCaptureContext):
                 return
             time.sleep(interval)
 
+    def import_raw_key(self, private_key: str, passphrase: str=""):
+        with RaiseForParam("private_key"):
+            value_assert(
+                private_key.startswith("0x"), "must be a hex string prefixed with 0x")
+        account_address = self._web3.personal.importRawKey(
+            private_key, passphrase)
+        if account_address not in self._accounts:
+            self._accounts.append(account_address)
+
+    def unlock_account(self, address: str, passphrase: str="", unlock_duration: int=300):
+        self._web3.personal.unlockAccount(address, passphrase, unlock_duration)
+
+    def miner_start(self, num_threads: int):
+        self._web3.miner.start(num_threads)
+
 
 class BatchCaller:
     """Utility to batch function call requests to the ETH node
