@@ -1,7 +1,7 @@
 import setuptools
 
 # DO NOT remove or rename this variable
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 
 SETUP = lambda: dict(
