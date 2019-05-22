@@ -1,3 +1,5 @@
 sphinx-jsonschema
 sphinx_rtd_theme
 jsonschema
+web3
+pytest
