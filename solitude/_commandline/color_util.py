@@ -34,12 +34,19 @@ COLOR_MAP = {
 
 class Color:
     _enabled = False
+    _colorama_initialized = False
 
     @classmethod
     def enable(cls):
-        if not cls._enabled:
+        if not cls._colorama_initialized:
             colorama.init()
+            cls._colorama_initialized = True
             cls._enabled = True
+
+    @classmethod
+    def disable(cls):
+        if cls._enabled:
+            cls._enabled = False
 
     @classmethod
     def wrap(cls, text, color=""):

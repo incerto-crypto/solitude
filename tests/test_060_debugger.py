@@ -13,10 +13,15 @@ from solitude.testing import SOL
 
 from solitude.debugger import EvmTrace, InteractiveDebuggerOI
 from solitude._commandline.cmd_debug import InteractiveDebuggerCLI
-from conftest import sol, SOLIDITY_VERSION, GANACHE_VERSION, attila  # noqa
+from conftest import (
+    sol, SOLIDITY_VERSION, GANACHE_VERSION, attila, unpack_test_data)
 from io import StringIO
 
 pytestmark = [pytest.mark.base, pytest.mark.debugger]
+
+
+VAR_TEMPLATE_UINT256 = r"uint256\s+{name}\s*=\s*{val}(\s|;|$|\r|\n)"
+FNARG_TEMPLATE_UINT256 = r"{name}\(\s*uint256\s+{argname}\s*=\s*{argval}\s*\)"
 
 
 def onecmd(debugger, buf, line):
@@ -83,8 +88,6 @@ def test_0002_interactive(sol: SOL, attila):
 
     LINE10_BP = "TestContract:10"
     LINE10_CODE = "if (n < 2)"
-    var_template = r"uint256\s+{name}\s*=\s*{val}(\s|;|$|\r|\n)"
-    fn_template = r"{name}\(\s*uint256\s+{argname}\s*=\s*{argval}\s*\)"
 
     buf = StringIO()
     debugger = InteractiveDebuggerCLI(InteractiveDebuggerOI(tx.txhash, sol.client), stdout=buf)
@@ -103,17 +106,17 @@ def test_0002_interactive(sol: SOL, attila):
 
     out = onecmd(debugger, buf, "info locals")
     # [I] Variable: uint256 n = 7
-    assert re.search(var_template.format(name="n", val="7"), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name="n", val="7"), out) is not None
 
     out = onecmd(debugger, buf, "print n")
     # [I] Variable: uint256 n = 7
-    assert re.search(var_template.format(name="n", val="7"), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name="n", val="7"), out) is not None
 
     out = onecmd(debugger, buf, "backtrace")
     # [I] #0 function fib_r(uint256 n = 7)
     # [I] #1 function fib(uint256 n = 7)
-    assert re.search(fn_template.format(name="fib_r", argname="n", argval="7"), out) is not None
-    assert re.search(fn_template.format(name="fib", argname="n", argval="7"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib_r", argname="n", argval="7"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib", argname="n", argval="7"), out) is not None
 
     out = onecmd(debugger, buf, "continue")
     # [I] Breakpoint: TestContract:10:16
@@ -125,13 +128,13 @@ def test_0002_interactive(sol: SOL, attila):
     # [I] #0 function fib_r(uint256 n = 5)
     # [I] #1 function fib_r(uint256 n = 7)
     # [I] #2 function fib(uint256 n = 7)
-    assert re.search(fn_template.format(name="fib_r", argname="n", argval="5"), out) is not None
-    assert re.search(fn_template.format(name="fib_r", argname="n", argval="7"), out) is not None
-    assert re.search(fn_template.format(name="fib", argname="n", argval="7"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib_r", argname="n", argval="5"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib_r", argname="n", argval="7"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib", argname="n", argval="7"), out) is not None
 
     out = onecmd(debugger, buf, "print n")
     # [I] Variable: uint256 n = 5
-    assert re.search(var_template.format(name="n", val="5"), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name="n", val="5"), out) is not None
 
     out = onecmd(debugger, buf, "frame 1")
     # [I] Selected frame: #1
@@ -140,7 +143,7 @@ def test_0002_interactive(sol: SOL, attila):
 
     out = onecmd(debugger, buf, "print n")
     # [I] Variable: uint256 n = 7
-    assert re.search(var_template.format(name="n", val="7"), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name="n", val="7"), out) is not None
 
     out = onecmd(debugger, buf, "info breakpoints")
     # [I] Breakpoint: TestContract:10
@@ -174,21 +177,21 @@ def test_0002_interactive(sol: SOL, attila):
     # (code...)
     # [I] Return: uint256 ? = 5
     fib5 = reference_fib(5)
-    assert re.search(var_template.format(name=r"[^\s]+", val=fib5.value), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name=r"[^\s]+", val=fib5.value), out) is not None
 
     out = onecmd(debugger, buf, "info args")
     # [I] Call: function fib_r(uint256 n = 5)
-    assert re.search(fn_template.format(name="fib_r", argname="n", argval="5"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib_r", argname="n", argval="5"), out) is not None
 
     out = onecmd(debugger, buf, "finish")
     # (code...)
     # [I] Return: uint256 ? = 13
     fib7 = reference_fib(7)
-    assert re.search(var_template.format(name=r"[^\s]+", val=fib7.value), out) is not None
+    assert re.search(VAR_TEMPLATE_UINT256.format(name=r"[^\s]+", val=fib7.value), out) is not None
 
     out = onecmd(debugger, buf, "info args")
     # [I] Call: function fib_r(uint256 n = 7)
-    assert re.search(fn_template.format(name="fib_r", argname="n", argval="7"), out) is not None
+    assert re.search(FNARG_TEMPLATE_UINT256.format(name="fib_r", argname="n", argval="7"), out) is not None
 
     out = onecmd(debugger, buf, "quit")
     # (no output to check)

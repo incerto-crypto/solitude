@@ -8,28 +8,15 @@ import subprocess
 import re
 import sys
 import yaml
-import unittest.mock
-from conftest import tmpdir, TmpTestDir, WorkingDir, SOLIDITY_VERSION  # noqa
+from conftest import (
+    tmpdir, TmpTestDir, WorkingDir, SOLIDITY_VERSION,
+    run_solitude, run_pytest)
 
 pytestmark = [pytest.mark.base, pytest.mark.commandline]
 
 
 def prepend_pragma_solidity(source, version):
     return ("pragma solidity ^%s;\n" % version) + source
-
-
-def run_solitude(args=[]):
-    import solitude._commandline.main
-    with unittest.mock.patch("sys.argv", ["solitude"] + args):
-        retcode = solitude._commandline.main.main()
-        assert retcode == 0
-
-
-def run_pytest(args=[]):
-    import pytest
-    with unittest.mock.patch("sys.argv", ["pytest"] + args):
-        retcode = pytest.main()
-        assert retcode == 0
 
 
 @pytest.mark.require_local_tools

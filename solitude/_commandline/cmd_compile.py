@@ -22,4 +22,4 @@ def main(args):
             print(file_message_format(message), file=sys.stderr)
         raise CLIError("Compiler error")
 
-    objects.save_directory(cfg["Project.ObjectDir"])
+    objects.save_directory(cfg["Project.ObjectDir"], cfg["Project.ObjectDirType"])

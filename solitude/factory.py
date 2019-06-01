@@ -119,9 +119,10 @@ class Factory:
     def get_objectlist(self) -> "ContractObjectList":
         from solitude.common.contract_objectlist import ContractObjectList
         object_dir = self._cfg["Project.ObjectDir"]
+        object_dir_type = self._cfg["Project.ObjectDirType"]
         objects = ContractObjectList()
         if object_dir is not None:
-            objects.add_directory(object_dir)
+            objects.add_directory(object_dir, buildtype=object_dir_type)
         return objects
 
     def get_project_name(self):

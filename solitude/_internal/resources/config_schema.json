@@ -18,6 +18,12 @@
             "description": "Directory where the (compiled) contract objects are located",
             "default": "./build/contracts"
         },
+        "Project.ObjectDirType": {
+            "type": "string",
+            "enum": ["solitude", "truffle"],
+            "description": "Format of the compiled contracts stored in the directory",
+            "default": "solitude"
+        },
 
         "Tools.Directory": {
             "type": "string",
@@ -168,6 +174,7 @@
         "Project.Name",
         "Project.SourceDir",
         "Project.ObjectDir",
+        "Project.ObjectDirType",
 
         "Tools.Directory",
         "Tools.Solc.Version",

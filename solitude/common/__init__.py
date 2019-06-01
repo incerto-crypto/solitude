@@ -13,7 +13,7 @@ from solitude.common.resource_util import (
 from solitude.common.config_util import (
     read_config_file, read_yaml_or_json, make_default_config)
 
-from solitude.common.contract_objectlist import ContractObjectList
+from solitude.common.contract_objectlist import ContractObjectList, BuildDirectoryType
 from solitude.common.contract_sourcelist import ContractSourceList
 from solitude.common.contract_util import path_to_unitname
 from solitude.common.dump import Dump
@@ -38,6 +38,7 @@ __all__ = [
     "make_default_config",
 
     "ContractObjectList",
+    "BuildDirectoryType",
     "ContractSourceList",
     "path_to_unitname",
 

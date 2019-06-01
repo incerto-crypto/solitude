@@ -7,7 +7,15 @@ import os
 import hashlib
 import json
 from typing import List, Tuple, Dict, Optional  # noqa
-from solitude._internal import type_assert, value_assert, RaiseForParam
+from solitude._internal import (
+    type_assert, value_assert, RaiseForParam, EnumType)
+from solitude.common.contract_util import (
+    convert_contract_truffle_to_solitude)
+
+
+class BuildDirectoryType(EnumType):
+    SOLITUDE = "solitude"
+    TRUFFLE = "truffle"
 
 
 def make_unique_built_contract_filename(unitname: str, contractname: str):
@@ -42,6 +50,8 @@ class ContractObjectList:
     """A collection of compiled contracts
     """
 
+    _EXCLUDE_TRUFFLE_CONTRACTS = ["Migrations"]
+
     def __init__(self):
         """Create an empty collection of compiled contracts
         """
@@ -69,11 +79,24 @@ class ContractObjectList:
         except KeyError:
             self._name_to_units[contractname] = [unitname]
 
-    def add_directory(self, path: str) -> None:
+    def add_directory(self, path: str, buildtype=BuildDirectoryType.SOLITUDE) -> None:
         """Add all contracts from a directory.
 
         :param path: path of the directory containing the contracts data.
+        :param buildtype: format of the build directory, one of the values of BuildDirectoryType.
+            defaults to SOLITUDE.
         """
+        with RaiseForParam("buildtype"):
+            BuildDirectoryType.value_assert(buildtype)
+
+        if buildtype == BuildDirectoryType.SOLITUDE:
+            self._add_solitude_directory(path)
+        elif buildtype == BuildDirectoryType.TRUFFLE:
+            self._add_truffle_directory(path)
+        else:
+            assert False
+
+    def _add_solitude_directory(self, path: str):
         for filename in os.listdir(path):
             if file_is_built_contract(filename):
                 with open(os.path.join(path, filename)) as fp:
@@ -83,16 +106,53 @@ class ContractObjectList:
                     contract["_solitude"]["contractName"],
                     contract)
 
-    def save_directory(self, path: str) -> None:
+    def _add_truffle_directory(self, path: str):
+        source_unit_index_map = {}
+        # Since truffle does not store a mapping of the source index (as it appears in the source map)
+        #   to the source file, we build this index at the end, from the source index found in the AST
+        #   of each file.
+        for filename in os.listdir(path):
+            if filename.endswith(".json"):
+
+                # Ignore the Migrations contract
+                if filename[:-len(".json")] in ContractObjectList._EXCLUDE_TRUFFLE_CONTRACTS:
+                    continue
+
+                with open(os.path.join(path, filename)) as fp:
+                    truffle_contract = json.load(fp)
+
+                contract = convert_contract_truffle_to_solitude(
+                    truffle_contract)
+                source_unit_index = int(contract["_solitude"]["ast"]["src"].split(":")[2])
+                source_unit_index_map[source_unit_index] = contract["_solitude"]["unitName"]
+                self.add_contract(
+                    contract["_solitude"]["unitName"],
+                    contract["_solitude"]["contractName"],
+                    contract)
+        source_list = [None] * (1 + max(source_unit_index_map.keys()))
+        for index, unitname in source_unit_index_map.items():
+            source_list[index] = unitname
+        for key, contract in self._contracts.items():
+            contract["_solitude"]["sourceList"] = source_list
+
+    def save_directory(self, path: str, buildtype=BuildDirectoryType.SOLITUDE) -> None:
         """Save all contracts to a directory.
 
         :param path: path of destination directory; the directory must exist.
         """
-        os.makedirs(path, exist_ok=True)
-        for (unitname, contractname), contract in self._contracts.items():
-            filename = make_unique_built_contract_filename(unitname, contractname)
-            with open(os.path.join(path, filename), "w") as fp:
-                json.dump(contract, fp, indent=2)
+        with RaiseForParam("buildtype"):
+            BuildDirectoryType.value_assert(buildtype)
+
+        if buildtype == BuildDirectoryType.SOLITUDE:
+            os.makedirs(path, exist_ok=True)
+            for (unitname, contractname), contract in self._contracts.items():
+                filename = make_unique_built_contract_filename(unitname, contractname)
+                with open(os.path.join(path, filename), "w") as fp:
+                    json.dump(contract, fp, indent=2)
+        elif buildtype == BuildDirectoryType.TRUFFLE:
+            raise NotImplementedError("Saving to truffle format is not implemented yet")
+        else:
+            assert False
 
     def update(self, other: "ContractObjectList") -> None:
         """Add all contracts from other ContractObjectList.

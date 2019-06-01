@@ -4,8 +4,11 @@
 # COPYING file in the root directory of this source tree
 
 import pytest
+import unittest.mock
 import tempfile
 import shutil
+import tarfile
+import io
 import os
 from types import SimpleNamespace
 from solitude.common import update_global_config
@@ -14,6 +17,7 @@ from solitude.testing import SOL_new
 from solitude.tools import Solc, GanacheCli, EthLint
 from solitude.server import kill_all_servers
 
+TESTDIR = os.path.dirname(os.path.abspath(__file__))
 
 ARGS = SimpleNamespace()
 
@@ -159,3 +163,32 @@ def tool_ethlint(tooldir):
     if not tool.have():
         tool.add()
     yield tool
+
+
+def unpack_test_data(tmp, name) -> str:
+    dest = os.path.join(tmp, name)
+    with tarfile.open(os.path.join(TESTDIR, "data", name, name + ".tar.xz")) as tar:
+        tar.extractall(path=dest)
+    return dest
+
+
+def run_solitude(args=[]) -> str:
+    buf = io.StringIO()
+    import solitude._commandline.main
+    from solitude._commandline.color_util import Color
+    try:
+        with unittest.mock.patch("sys.argv", ["solitude"] + args):
+            with unittest.mock.patch("sys.stdout", buf):
+                retcode = solitude._commandline.main.main()
+        assert retcode == 0
+        buf.seek(0)
+        return buf.read()
+    finally:
+        Color.disable()
+
+
+def run_pytest(args=[]):
+    import pytest
+    with unittest.mock.patch("sys.argv", ["pytest"] + args):
+        retcode = pytest.main()
+        assert retcode == 0
