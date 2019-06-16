@@ -71,6 +71,7 @@ def create_parser():
         from solitude._commandline import cmd_debug
         return cmd_debug
     p_debug.set_defaults(module=module_debug)
+    p_debug.add_argument("--json", action="store_true")
     p_debug.add_argument(
         "txhash", type=txhash_type,
         help="Transaction hash, a hex string prefixed with 0x")
