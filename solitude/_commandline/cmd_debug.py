@@ -22,6 +22,25 @@ from solitude._commandline.color_util import Color
 
 
 def main(args):
+    if args.json:
+        run_json_debug(args)
+    else:
+        run_console_debug(args)
+
+def run_json_debug(args):
+    factory = Factory(read_config_file(args.config))
+    client = factory.create_client()
+    client.update_contracts(factory.get_objectlist())
+
+    idbg = InteractiveDebuggerOI(args.txhash, client)
+    while True:
+        command = json.loads(input())
+        res = idbg.call(command)
+        print(json.dumps(res))
+        if "quit" in res:
+            return
+
+def run_console_debug(args):
     Color.enable()
     factory = Factory(read_config_file(args.config))
     client = factory.create_client()
@@ -69,6 +88,7 @@ class InteractiveDebuggerCLI(cmd.Cmd):
             "print": functools.partial(self.oi_arglist, name="print"),
             "p": functools.partial(self.oi_arglist, name="print"),
             "info": self.oi_info,
+            "il": functools.partial(self.oi_arglist, name="info_locals"),   
             "quit": self.cmd_quit,
             "q": self.cmd_quit
         }
