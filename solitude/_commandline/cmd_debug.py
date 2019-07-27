@@ -88,6 +88,7 @@ class InteractiveDebuggerCLI(cmd.Cmd):
             "print": functools.partial(self.oi_arglist, name="print"),
             "p": functools.partial(self.oi_arglist, name="print"),
             "info": self.oi_info,
+            "il": functools.partial(self.oi_arglist, name="info_locals"),   
             "quit": self.cmd_quit,
             "q": self.cmd_quit
         }
