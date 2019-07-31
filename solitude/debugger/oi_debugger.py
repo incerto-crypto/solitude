@@ -117,6 +117,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             "absolute_path": absolute_path,
             "line_index": step.code.line_index,
             "line_pos": step.code.line_pos,
+            "line_lenght": step.length,
             "line_start": step.code.line_start,
             "text": str(colortext),
             "colortext": colortext.to_obj()
