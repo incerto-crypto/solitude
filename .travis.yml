@@ -3,6 +3,6 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install -U attrs .
+  - pip install -U attrs>=19.1.0 .
 script:
   - pytest -v tests
