@@ -341,6 +341,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             if f.function is not None:
                 obj["frames"].append({
                     "index": i,
+                    "code": f.cur.code._asdict(),
                     "function_found": True,
                     "function": f.function.to_obj(),
                     "description": str(f.function)
@@ -352,6 +353,7 @@ class InteractiveDebuggerOI(ObjectInterface):
                     f.cur, strip=True, color=None)
                 obj["frames"].append({
                     "index": i,
+                    "code": f.cur.code._asdict(),
                     "function_found": False,
                     "function": None,
                     "description": ("[ %s => %s ]" % (prev_line, cur_line))
@@ -359,6 +361,7 @@ class InteractiveDebuggerOI(ObjectInterface):
             else:
                 obj["frames"].append({
                     "index": i,
+                    "code": f.cur.code._asdict(),
                     "function_found": False,
                     "function": None,
                     "description": "?"

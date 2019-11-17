@@ -124,6 +124,8 @@ class Frame(ISerializable):
 
     def to_obj(self):
         return {
+            "prev": self.prev,
+            "cur": self.cur,
             "locals": {k: v.to_obj() for k, v in self.locals.items()},
             "return_values": [v.to_obj() for v in self.return_values],
             "function": (self.function.to_obj() if self.function is not None else None)
